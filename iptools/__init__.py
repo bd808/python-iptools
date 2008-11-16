@@ -44,11 +44,11 @@
   notation and/or (start, end) ranges to be used in the INTERNAL_IPS list.
 
   Example:
-    INTERNAL_IPS = IpRangeList([
+    INTERNAL_IPS = IpRangeList(
         '127.0.0.1',
         '192.168/16',
         ('10.0.0.1', '10.0.0.19'),
-        ])
+        )
 
 """
 __version__ = '0.1'
@@ -395,7 +395,7 @@ class IpRangeList (object):
     a smart object which allows CIDR notation.
 
 
-    >>> INTERNAL_IPS = IpRangeList(['127.0.0.1', '10/8', '192.168/16'])
+    >>> INTERNAL_IPS = IpRangeList('127.0.0.1', '10/8', '192.168/16')
     >>> '127.0.0.1' in INTERNAL_IPS
     True
     >>> '10.10.10.10' in INTERNAL_IPS
@@ -405,14 +405,14 @@ class IpRangeList (object):
     >>> '172.16.0.1' in INTERNAL_IPS
     False
     """
-    def __init__ (self, list):
-        self.ips = [IpRange(ip) for ip in list]
+    def __init__ (self, *args):
+        self.ips = tuple(IpRange(ip) for ip in args)
     #end __init__
 
     def __repr__ (self):
         """
-        >>> print IpRangeList(['127.0.0.1', '10/8', '192.168/16'])
-        [('127.0.0.1', '127.0.0.1'), ('10.0.0.0', '10.255.255.255'), ('192.168.0.0', '192.168.255.255')]
+        >>> print IpRangeList('127.0.0.1', '10/8', '192.168/16')
+        (('127.0.0.1', '127.0.0.1'), ('10.0.0.0', '10.255.255.255'), ('192.168.0.0', '192.168.255.255'))
         """
         return self.ips.__repr__()
     #end __repr__
@@ -426,7 +426,7 @@ class IpRangeList (object):
 
     def __iter__ (self):
         """
-        >>> iter = IpRangeList(['127.0.0.1',]).__iter__()
+        >>> iter = IpRangeList('127.0.0.1').__iter__()
         >>> iter.next()
         '127.0.0.1'
         >>> iter.next()
@@ -434,7 +434,7 @@ class IpRangeList (object):
             ...
         StopIteration
 
-        >>> iter = IpRangeList(['127.0.0.1','10/31']).__iter__()
+        >>> iter = IpRangeList('127.0.0.1', '10/31').__iter__()
         >>> iter.next()
         '127.0.0.1'
         >>> iter.next()
