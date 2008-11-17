@@ -1,0 +1,7 @@
+include README
+include AUTHORS
+include INSTALL
+include LICENSE
+include CHANGES
+include MANIFEST.in
+include ez_setup.py

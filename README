@@ -1,0 +1,19 @@
+===== python-iptools =====
+
+Utitlities for dealing with ip addresses.
+
+  A few useful functions and objects for manipulating ip addresses in python. 
+  This was all inspired by a desire to be able to use CIDR address notation to 
+  designate INTERNAL_IPS in a Django project's settings file.
+
+  The IpRangeList object can be used in a django settings file to allow CIDR 
+  notation and/or (start, end) ranges to be used in the INTERNAL_IPS list.
+
+  Example:
+
+    INTERNAL_IPS = IpRangeList(
+        '127.0.0.1',
+        '192.168/16',
+        ('10.0.0.1', '10.0.0.19'),
+    )
+

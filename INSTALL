@@ -1,0 +1,3 @@
+To install iptools just run the following command form your shell:
+
+    python setup.py install
