@@ -26,11 +26,15 @@
 """Utitlities for dealing with ip addresses.
 
   Functions:
-    - validate_ip: Validate a dotted quad ip address.
-    - ip2long: Convert a dotted quad ip address to a network byte order 32-bit 
+    - validate_ip: Validate a dotted-quad ip address.
+    - ip2long: Convert a dotted-quad ip address to a network byte order 32-bit 
       integer.
     - long2ip: Convert a network byte order 32-bit integer to a dotted quad ip 
       address.
+    - ip2hex: Convert a dotted-quad ip address to a hex encoded network byte
+      order 32-bit integer.
+    - hex2ip: Convert a hex encoded network byte order 32-bit integer to a
+      dotted-quad ip address.
     - validate_cidr: Validate a CIDR notation ip address.
     - cidr2block: Convert a CIDR notation ip address into a tuple containing 
       network block start and end addresses.
@@ -54,7 +58,7 @@
 __version__ = '0.1'
 
 __all__ = (
-        'validate_ip', 'ip2long', 'long2ip',
+        'validate_ip', 'ip2long', 'long2ip', 'ip2hex', 'hex2ip',
         'validate_cidr', 'cidr2block',
         'IpRange', 'IpRangeList',
         )
@@ -209,6 +213,53 @@ def long2ip (l):
         raise TypeError, "expected int between 0 and %d inclusive" % _MAX_IP
     return '%d.%d.%d.%d' % (l>>24 & 255, l>>16 & 255, l>>8 & 255, l & 255) 
 #end long2ip
+
+def ip2hex (addr):
+    """
+    Convert a dotted-quad ip address to a hex encoded number.
+
+    >>> ip2hex('0.0.0.1')
+    '00000001'
+    >>> ip2hex('127.0.0.1')
+    '7f000001'
+    >>> ip2hex('127.255.255.255')
+    '7fffffff'
+    >>> ip2hex('128.0.0.1')
+    '80000001'
+    >>> ip2hex('128.1')
+    '80000001'
+    >>> ip2hex('255.255.255.255')
+    'ffffffff'
+
+    """
+    netip = ip2long(addr)
+    if netip is None:
+        return None
+    return "%08x" % netip
+#end ip2hex
+
+def hex2ip (hex_str):
+    """
+    Convert a hex encoded integer to a dotted-quad ip address.
+
+    >>> hex2ip('00000001')
+    '0.0.0.1'
+    >>> hex2ip('7f000001')
+    '127.0.0.1'
+    >>> hex2ip('7fffffff')
+    '127.255.255.255'
+    >>> hex2ip('80000001')
+    '128.0.0.1'
+    >>> hex2ip('ffffffff')
+    '255.255.255.255'
+
+    """
+    try:
+        netip = int(hex_str, 16)
+    except ValueError:
+        return None
+    return long2ip(netip)
+#end hex2ip
 
 def cidr2block (cidr):
     """
