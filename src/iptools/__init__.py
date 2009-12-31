@@ -439,8 +439,10 @@ class IpRange (object):
             ...
         StopIteration
         """
-        for i in xrange(self.startIp, self.endIp + 1):
+        i = self.startIp
+        while i <= self.endIp:
             yield long2ip(i)
+            i += 1
     #end __iter__
 #end class IpRange
 
