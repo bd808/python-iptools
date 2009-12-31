@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2008, Bryan Davis
+# Copyright (c) 2008-2010, Bryan Davis
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without 
@@ -95,9 +95,9 @@ def validate_ip (str):
         True if str is a valid dotted-quad ip address, False otherwise
     """
     if _DOTTED_QUAD_RE.match(str):
-        quads = (int(q) for q in str.split('.'))
+        quads = str.split('.')
         for q in quads:
-            if q > 255:
+            if int(q) > 255:
                 return False
         return True
     return False
@@ -153,13 +153,13 @@ def ip2long (ip):
 
 
     >>> ip2long('127.0.0.1')
-    2130706433
+    2130706433L
 
     >>> ip2long('127.1')
-    2130706433
+    2130706433L
 
     >>> ip2long('127')
-    2130706432
+    2130706432L
 
     >>> ip2long('127.0.0.256') is None
     True
@@ -184,11 +184,11 @@ def ip2long (ip):
 
     lngip = 0
     for q in quads:
-        lngip = (lngip << 8) | int(q)
+        lngip = (lngip << 8L) | int(q)
     return lngip
 #end ip2long
 
-_MAX_IP = 0xffffffff
+_MAX_IP = 0xffffffffL
 
 def long2ip (l):
     """
@@ -303,7 +303,7 @@ def cidr2block (cidr):
     quads = ip.split('.')
     baseIp = 0
     for i in range(4):
-        baseIp = (baseIp << 8) | int(len(quads) > i and quads[i] or 0)
+        baseIp = (baseIp << 8L) | int(len(quads) > i and quads[i] or 0)
 
     # keep left most prefix bits of baseIp
     shift = 32 - prefix
@@ -376,6 +376,16 @@ class IpRange (object):
     #end __init__
 
     def __repr__ (self):
+        """
+        >>> print IpRange('127.0.0.1')
+        ('127.0.0.1', '127.0.0.1')
+
+        >>> print IpRange('10/8')
+        ('10.0.0.0', '10.255.255.255')
+
+        >>> print IpRange('127.0.0.255', '127.0.0.0')
+        ('127.0.0.0', '127.0.0.255')
+        """
         return (long2ip(self.startIp), long2ip(self.endIp)).__repr__()
     #end __repr__
 
@@ -392,7 +402,7 @@ class IpRange (object):
         >>> '10.0.0.1' in r
         False
 
-        >>> 2130706433 in r
+        >>> 2130706433L in r
         True
 
         >>> 'invalid' in r
@@ -457,7 +467,7 @@ class IpRangeList (object):
     False
     """
     def __init__ (self, *args):
-        self.ips = tuple(IpRange(ip) for ip in args)
+        self.ips = tuple(map(IpRange, args))
     #end __init__
 
     def __repr__ (self):
@@ -469,6 +479,32 @@ class IpRangeList (object):
     #end __repr__
 
     def __contains__ (self, item):
+        """
+        Implements membership test operators `in` and `not in` for the address 
+        range.
+
+
+        >>> r = IpRangeList('127.0.0.1', '10/8', '192.168/16')
+        >>> '127.0.0.1' in r
+        True
+
+        >>> '10.0.0.1' in r
+        True
+
+        >>> 2130706433L in r
+        True
+
+        >>> 'invalid' in r
+        Traceback (most recent call last):
+            ...
+        TypeError: expected dotted-quad ip address or 32-bit integer
+
+
+        Args:
+            item: Dotted-quad ip address
+        Returns:
+            True if address is in range, False otherwise
+        """
         for r in self.ips:
             if item in r:
                 return True
