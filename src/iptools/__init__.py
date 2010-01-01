@@ -55,7 +55,7 @@
         )
 
 """
-__version__ = '0.1'
+__version__ = '0.2'
 
 __all__ = (
         'validate_ip', 'ip2long', 'long2ip', 'ip2hex', 'hex2ip',
@@ -65,9 +65,26 @@ __all__ = (
 
 import re
 
+
+# sniff for python2.x / python3k compatibility "fixes'
+try:
+    basestring = basestring
+except NameError:
+    # 'basestring' is undefined, must be python3k
+    basestring = str
+
+
+try:
+    next = next
+except NameError:
+    # builtin next function doesn't exist
+    def next (iterable):
+        return iterable.next()
+
+
 _DOTTED_QUAD_RE = re.compile(r'^(\d{1,3}\.){0,3}\d{1,3}$')
 
-def validate_ip (str):
+def validate_ip (s):
     """Validate a dotted-quad ip address.
 
     The string is considered a valid dotted-quad address if it consists of 
@@ -90,12 +107,12 @@ def validate_ip (str):
 
 
     Args:
-        str: String to validate as a dotted-quad ip address
+        s: String to validate as a dotted-quad ip address
     Returns:
         True if str is a valid dotted-quad ip address, False otherwise
     """
-    if _DOTTED_QUAD_RE.match(str):
-        quads = str.split('.')
+    if _DOTTED_QUAD_RE.match(s):
+        quads = s.split('.')
         for q in quads:
             if int(q) > 255:
                 return False
@@ -105,7 +122,7 @@ def validate_ip (str):
 
 _CIDR_RE = re.compile(r'^(\d{1,3}\.){0,3}\d{1,3}/\d{1,2}$')
 
-def validate_cidr (str):
+def validate_cidr (s):
     """Validate a CIDR notation ip address.
 
     The string is considered a valid CIDR address if it consists of one to 
@@ -136,8 +153,8 @@ def validate_cidr (str):
     Returns:
         True if str is a valid CIDR address, False otherwise
     """
-    if _CIDR_RE.match(str):
-        ip, mask = str.split('/')
+    if _CIDR_RE.match(s):
+        ip, mask = s.split('/')
         if validate_ip(ip):
             if int(mask) > 32:
                 return False
@@ -153,13 +170,13 @@ def ip2long (ip):
 
 
     >>> ip2long('127.0.0.1')
-    2130706433L
+    2130706433
 
     >>> ip2long('127.1')
-    2130706433L
+    2130706433
 
     >>> ip2long('127')
-    2130706432L
+    2130706432
 
     >>> ip2long('127.0.0.256') is None
     True
@@ -184,11 +201,11 @@ def ip2long (ip):
 
     lngip = 0
     for q in quads:
-        lngip = (lngip << 8L) | int(q)
+        lngip = (lngip << 8) | int(q)
     return lngip
 #end ip2long
 
-_MAX_IP = 0xffffffffL
+_MAX_IP = 0xffffffff
 
 def long2ip (l):
     """
@@ -198,7 +215,7 @@ def long2ip (l):
     >>> long2ip(2130706433)
     '127.0.0.1'
 
-    >>> long2ip(None)
+    >>> long2ip(None) #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
     TypeError: unsupported operand type(s) for >>: 'NoneType' and 'int'
@@ -210,7 +227,7 @@ def long2ip (l):
         Dotted-quad ip address (eg. '127.0.0.1')
     """
     if _MAX_IP < l < 0:
-        raise TypeError, "expected int between 0 and %d inclusive" % _MAX_IP
+        raise TypeError("expected int between 0 and %d inclusive" % _MAX_IP)
     return '%d.%d.%d.%d' % (l>>24 & 255, l>>16 & 255, l>>8 & 255, l & 255) 
 #end long2ip
 
@@ -303,7 +320,7 @@ def cidr2block (cidr):
     quads = ip.split('.')
     baseIp = 0
     for i in range(4):
-        baseIp = (baseIp << 8L) | int(len(quads) > i and quads[i] or 0)
+        baseIp = (baseIp << 8) | int(len(quads) > i and quads[i] or 0)
 
     # keep left most prefix bits of baseIp
     shift = 32 - prefix
@@ -335,18 +352,18 @@ class IpRange (object):
     True
 
     >>> r = IpRange('127/24')
-    >>> print r
+    >>> print(r)
     ('127.0.0.0', '127.0.0.255')
 
     >>> r = IpRange('127/30')
     >>> for ip in r:
-    ...     print ip
+    ...     print(ip)
     127.0.0.0
     127.0.0.1
     127.0.0.2
     127.0.0.3
 
-    >>> print IpRange('127.0.0.255', '127.0.0.0')
+    >>> print(IpRange('127.0.0.255', '127.0.0.0'))
     ('127.0.0.0', '127.0.0.255')
     """
     def __init__ (self, start, end=None):
@@ -377,13 +394,13 @@ class IpRange (object):
 
     def __repr__ (self):
         """
-        >>> print IpRange('127.0.0.1')
+        >>> print(IpRange('127.0.0.1'))
         ('127.0.0.1', '127.0.0.1')
 
-        >>> print IpRange('10/8')
+        >>> print(IpRange('10/8'))
         ('10.0.0.0', '10.255.255.255')
 
-        >>> print IpRange('127.0.0.255', '127.0.0.0')
+        >>> print(IpRange('127.0.0.255', '127.0.0.0'))
         ('127.0.0.0', '127.0.0.255')
         """
         return (long2ip(self.startIp), long2ip(self.endIp)).__repr__()
@@ -402,7 +419,7 @@ class IpRange (object):
         >>> '10.0.0.1' in r
         False
 
-        >>> 2130706433L in r
+        >>> 2130706433 in r
         True
 
         >>> 'invalid' in r
@@ -418,8 +435,9 @@ class IpRange (object):
         """
         if isinstance(item, basestring):
             item = ip2long(item)
-        if type(item) not in [type(1), type(1L)]:
-            raise TypeError, "expected dotted-quad ip address or 32-bit integer"
+        if type(item) not in [type(1), type(_MAX_IP)]:
+            raise TypeError(
+                "expected dotted-quad ip address or 32-bit integer")
 
         return self.startIp <= item <= self.endIp
     #end __contains__
@@ -430,11 +448,11 @@ class IpRange (object):
 
 
         >>> iter = IpRange('127/31').__iter__()
-        >>> iter.next()
+        >>> next(iter)
         '127.0.0.0'
-        >>> iter.next()
+        >>> next(iter)
         '127.0.0.1'
-        >>> iter.next()
+        >>> next(iter)
         Traceback (most recent call last):
             ...
         StopIteration
@@ -474,7 +492,7 @@ class IpRangeList (object):
 
     def __repr__ (self):
         """
-        >>> print IpRangeList('127.0.0.1', '10/8', '192.168/16')
+        >>> print(IpRangeList('127.0.0.1', '10/8', '192.168/16'))
         (('127.0.0.1', '127.0.0.1'), ('10.0.0.0', '10.255.255.255'), ('192.168.0.0', '192.168.255.255'))
         """
         return self.ips.__repr__()
@@ -493,7 +511,7 @@ class IpRangeList (object):
         >>> '10.0.0.1' in r
         True
 
-        >>> 2130706433L in r
+        >>> 2130706433 in r
         True
 
         >>> 'invalid' in r
@@ -516,21 +534,21 @@ class IpRangeList (object):
     def __iter__ (self):
         """
         >>> iter = IpRangeList('127.0.0.1').__iter__()
-        >>> iter.next()
+        >>> next(iter)
         '127.0.0.1'
-        >>> iter.next()
+        >>> next(iter)
         Traceback (most recent call last):
             ...
         StopIteration
 
         >>> iter = IpRangeList('127.0.0.1', '10/31').__iter__()
-        >>> iter.next()
+        >>> next(iter)
         '127.0.0.1'
-        >>> iter.next()
+        >>> next(iter)
         '10.0.0.0'
-        >>> iter.next()
+        >>> next(iter)
         '10.0.0.1'
-        >>> iter.next()
+        >>> next(iter)
         Traceback (most recent call last):
             ...
         StopIteration
@@ -541,11 +559,11 @@ class IpRangeList (object):
     #end __iter__
 #end class IpRangeList
 
-def _test ():
+def iptools_test ():
     import doctest
     doctest.testmod()
-#end _test
+#end iptools_test
 
 if __name__ == '__main__':
-    _test()
+   iptools_test()
 # vim: set sw=4 ts=4 sts=4 et :
