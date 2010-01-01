@@ -1,6 +1,13 @@
 Changes
 =======
 
+0.2
+---
+Better mulitplatform support:
+  Syntax changes to support python 2.3
+  Syntax changes to support python 3.1
+  Syntax changes to support platforms where xrange doesn't support long args
+
 0.1
 ---
 
