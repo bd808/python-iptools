@@ -3,9 +3,15 @@
 from ez_setup import use_setuptools
 use_setuptools()
 
+import os
 from setuptools import setup, find_packages
 
-version = '0.3'
+here = os.path.dirname(__file__)
+
+version_file = os.path.join(here, 'src/iptools/__init__.py')
+d = {}
+execfile(version_file, d)
+version = d['__version__']
 
 setup(
     name = 'iptools',
@@ -22,7 +28,7 @@ setup(
     packages = find_packages('src'),
     include_package_data = True,
     classifiers = [
-      'Development Status :: 3 - Alpha', 
+      'Development Status :: 4 - Beta', 
       'Environment :: Web Environment',
       'Intended Audience :: Developers',
       'License :: OSI Approved :: BSD License',
