@@ -55,7 +55,7 @@
         )
 
 """
-__version__ = '0.3'
+__version__ = '0.4.0-dev'
 
 __all__ = (
         'validate_ip', 'ip2long', 'long2ip', 'ip2hex', 'hex2ip',
