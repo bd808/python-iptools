@@ -371,17 +371,17 @@ class IpRange (object):
         Args:
             start: Ip address in dotted quad format or CIDR notation or tuple 
                 of ip addresses in dotted quad format
-            end: Ip address in dotted quad format
+            end: Ip address in dotted quad format or None
         """
-        if validate_cidr(start):
-            # CIDR notation range
-            start, end = cidr2block(start)
-
-        elif end is None:
+        if end is None:
             if isinstance(start, tuple):
-                # tuple range
-                end = start(1)
-                start = start(0)
+                # occurs when IpRangeList calls via map to pass start and end
+                start, end = start
+
+            elif validate_cidr(start):
+                # CIDR notation range
+                start, end = cidr2block(start)
+
             else:
                 # degenerate range
                 end = start
@@ -476,7 +476,7 @@ class IpRangeList (object):
     a smart object which allows CIDR notation.
 
 
-    >>> INTERNAL_IPS = IpRangeList('127.0.0.1', '10/8', '192.168/16')
+    >>> INTERNAL_IPS = IpRangeList('127.0.0.1','10/8',('192.168.0.1','192.168.255.255'))
     >>> '127.0.0.1' in INTERNAL_IPS
     True
     >>> '10.10.10.10' in INTERNAL_IPS
