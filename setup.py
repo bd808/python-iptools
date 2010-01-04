@@ -27,6 +27,7 @@ setup(
     package_dir = {'': 'src'},
     packages = find_packages('src'),
     include_package_data = True,
+    test_suite='iptools.test_iptools',
     classifiers = [
       'Development Status :: 4 - Beta', 
       'Environment :: Web Environment',
