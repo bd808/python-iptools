@@ -206,6 +206,7 @@ def ip2long (ip):
 #end ip2long
 
 _MAX_IP = 0xffffffff
+_MIN_IP = 0x0
 
 def long2ip (l):
     """
@@ -215,10 +216,31 @@ def long2ip (l):
     >>> long2ip(2130706433)
     '127.0.0.1'
 
+    >>> long2ip(_MIN_IP)
+    '0.0.0.0'
+
+    >>> long2ip(_MAX_IP)
+    '255.255.255.255'
+
     >>> long2ip(None) #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
     TypeError: unsupported operand type(s) for >>: 'NoneType' and 'int'
+
+    >>> long2ip(-1) #doctest: +IGNORE_EXCEPTION_DETAIL
+    Traceback (most recent call last):
+        ...
+    TypeError: expected int between 0 and 4294967295 inclusive
+
+    >>> long2ip(374297346592387463875L) #doctest: +IGNORE_EXCEPTION_DETAIL
+    Traceback (most recent call last):
+        ...
+    TypeError: expected int between 0 and 4294967295 inclusive
+
+    >>> long2ip(_MAX_IP + 1) #doctest: +IGNORE_EXCEPTION_DETAIL
+    Traceback (most recent call last):
+        ...
+    TypeError: expected int between 0 and 4294967295 inclusive
 
 
     Args:
@@ -226,7 +248,7 @@ def long2ip (l):
     Returns:
         Dotted-quad ip address (eg. '127.0.0.1')
     """
-    if _MAX_IP < l < 0:
+    if _MAX_IP < l or l < 0:
         raise TypeError("expected int between 0 and %d inclusive" % _MAX_IP)
     return '%d.%d.%d.%d' % (l>>24 & 255, l>>16 & 255, l>>8 & 255, l & 255) 
 #end long2ip
