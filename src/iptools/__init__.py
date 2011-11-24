@@ -484,6 +484,21 @@ class IpRange (object):
             yield long2ip(i)
             i += 1
     #end __iter__
+
+    def __len__ (self):
+        """
+        Return the length of the range.
+
+
+        >>> len(IpRange('127.0.0.1'))
+        1
+        >>> len(IpRange('127/31'))
+        2
+        >>> len(IpRange('127/22'))
+        1024
+        """
+        return self.endIp - self.startIp + 1
+    #end __len__
 #end class IpRange
 
 class IpRangeList (object):
@@ -555,6 +570,8 @@ class IpRangeList (object):
 
     def __iter__ (self):
         """
+        Return an iterator over all ranges in the list.
+
         >>> iter = IpRangeList('127.0.0.1').__iter__()
         >>> next(iter)
         '127.0.0.1'
@@ -579,6 +596,23 @@ class IpRangeList (object):
             for ip in r:
                 yield ip
     #end __iter__
+
+    def __len__ (self):
+        """
+        Return the length of all ranges in the list.
+
+
+        >>> len(IpRangeList('127.0.0.1'))
+        1
+        >>> len(IpRangeList('127.0.0.1', '10/31'))
+        3
+        >>> len(IpRangeList('1/24'))
+        256
+        >>> len(IpRangeList('192.168.0.0/22'))
+        1024
+        """
+        return sum([len(r) for r in self.ips])
+    #end __len__
 #end class IpRangeList
 
 def iptools_test ():
