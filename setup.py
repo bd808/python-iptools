@@ -16,12 +16,12 @@ version = d['__version__']
 setup(
     name = 'iptools',
     version = version,
-    description = 'Python utilites for manipulating IP addresses',
-    long_description = "Utilities for manipulating IP addresses including a class that can be used to include CIDR network blocks in Django's INTERNAL_IPS setting.",
+    description = 'Python utilites for manipulating IPv4 addresses',
+    long_description = "Utilities for manipulating IPv4 addresses including a class that can be used to include CIDR network blocks in Django's INTERNAL_IPS setting.",
     url = 'http://python-iptools.googlecode.com',
     download_url = 'http://pypi.python.org/packages/source/i/iptools/',
     author = 'Bryan Davis',
-    author_email = 'casadebender+iptools@gmail.com',
+    author_email = 'bd808@bd808.com',
     license = 'BSD',
     platforms = ['any',],
     package_dir = {'': 'src'},
@@ -29,7 +29,7 @@ setup(
     include_package_data = True,
     test_suite='iptools.test_iptools',
     classifiers = [
-      'Development Status :: 4 - Beta', 
+      'Development Status :: 4 - Beta',
       'Environment :: Web Environment',
       'Intended Audience :: Developers',
       'License :: OSI Approved :: BSD License',
@@ -38,7 +38,7 @@ setup(
       'Programming Language :: Python :: 2',
       'Programming Language :: Python :: 3',
       'Topic :: Utilities',
-      'Topic :: Internet', 
+      'Topic :: Internet',
     ],
     zip_safe=False,
 )
