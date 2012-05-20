@@ -33,14 +33,14 @@ notation and/or `(start, end)` ranges to be used in the `INTERNAL_IPS` list.
 
 ### Example: ###
 
-  #!/usr/bin/env python
-  import iptools
+    #!/usr/bin/env python
+    import iptools
 
-  INTERNAL_IPS = iptools.IpRangeList(
-      '127.0.0.1',                # single ip
-      '192.168/16',               # CIDR network block
-      ('10.0.0.1', '10.0.0.19'),  # inclusive range
-  )
+    INTERNAL_IPS = iptools.IpRangeList(
+        '127.0.0.1',                # single ip
+        '192.168/16',               # CIDR network block
+        ('10.0.0.1', '10.0.0.19'),  # inclusive range
+    )
 
 Python Version Compatibility
 ----------------------------
@@ -53,17 +53,17 @@ Installing
 
 Install the latest stable version using easy_install:
 
-  easy_install iptools
+    easy_install iptools
 
 or pip:
 
-  pip install iptools
+    pip install iptools
 
 Install the latest development version:
 
-  svn checkout http://python-iptools.googlecode.com/svn/trunk/ python-iptools
-  cd python-iptools
-  python setup.py install
+    svn checkout http://python-iptools.googlecode.com/svn/trunk/ python-iptools
+    cd python-iptools
+    python setup.py install
 
 ---
 [CIDR]: http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing
