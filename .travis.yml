@@ -7,7 +7,7 @@ python:
   - "3.2"
   - "pypy"
 
-script: "runtests"
+script: "./runtests"
 
 # nothing to install, but this will squelch a warning
 install: "true"
