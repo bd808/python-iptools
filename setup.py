@@ -1,13 +1,14 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
-from ez_setup import use_setuptools
-use_setuptools()
+try:
+  from setuptools import setup
+except ImportError:
+  from distutils.core import setup
 
+# get version from package
 import os
-from setuptools import setup, find_packages
-
 here = os.path.dirname(__file__)
-
 version_file = os.path.join(here, 'src/iptools/__init__.py')
 d = {}
 execfile(version_file, d)
@@ -25,7 +26,7 @@ setup(
     license = 'BSD',
     platforms = ['any',],
     package_dir = {'': 'src'},
-    packages = find_packages('src'),
+    packages = ['iptools'],
     include_package_data = True,
     test_suite='iptools.test_iptools',
     classifiers = [
