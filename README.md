@@ -102,7 +102,7 @@ Install the latest development version:
     python setup.py install
 
 ---
-[iptools][]: http://pypi.python.org/pypi/iptools
+[iptools]: http://pypi.python.org/pypi/iptools
 [ci-status]: https://secure.travis-ci.org/bd808/python-iptools.png
 [ci-home]: http://travis-ci.org/bd808/python-iptools
 [CIDR]: http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing
