@@ -447,6 +447,21 @@ class IpRange (Sequence):
         return self._len
     #end __len__
 
+    def __hash__ (self):
+        """
+        >>> a = IpRange('127.0.0.0/8')
+        >>> b = IpRange('127.0.0.0', '127.255.255.255')
+        >>> a.__hash__() == b.__hash__()
+        True
+        >>> c = IpRange('10/8')
+        >>> a.__hash__() == c.__hash__()
+        False
+        >>> b.__hash__() == c.__hash__()
+        False
+        """
+        return hash((self.startIp, self.endIp))
+    #end __hash__
+
     def _cast (self, item):
         if isinstance(item, basestring):
             item = ip2long(item)
