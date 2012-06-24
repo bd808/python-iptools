@@ -84,8 +84,11 @@ except NameError:
     def next (iterable):
         return iterable.next()
 
-from collections import Sequence
-
+try:
+    import Sequence
+except ImportError:
+    # python <2.6 doesn't have abc classes to extend
+    Sequence = object
 
 _DOTTED_QUAD_RE = re.compile(r'^(\d{1,3}\.){0,3}\d{1,3}$')
 
