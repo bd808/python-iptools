@@ -84,6 +84,11 @@ except NameError:
     def next (iterable):
         return iterable.next()
 
+try:
+    import Sequence
+except ImportError:
+    # python <2.6 doesn't have abc classes to extend
+    Sequence = object
 
 _DOTTED_QUAD_RE = re.compile(r'^(\d{1,3}\.){0,3}\d{1,3}$')
 
@@ -344,7 +349,7 @@ def cidr2block (cidr):
     return (long2ip(start), long2ip(end))
 #end cidr2block
 
-class IpRange (object):
+class IpRange (Sequence):
     """
     Range of ip addresses.
 
@@ -398,6 +403,7 @@ class IpRange (object):
         end = ip2long(end)
         self.startIp = min(start, end)
         self.endIp = max(start, end)
+        self._len = self.endIp - self.startIp + 1
     #end __init__
 
     def __repr__ (self):
@@ -411,6 +417,90 @@ class IpRange (object):
         """
         return (long2ip(self.startIp), long2ip(self.endIp)).__repr__()
     #end __repr__
+
+    def __eq__ (self, other):
+        """
+        >>> IpRange('127.0.0.1') == IpRange('127.0.0.1')
+        True
+        >>> IpRange('127.0.0.1') == IpRange('127.0.0.2')
+        False
+        >>> IpRange('10/8') == IpRange('10', '10.255.255.255')
+        True
+        """
+        return isinstance(other, IpRange) and \
+                self.startIp == other.startIp and \
+                self.endIp == other.endIp
+    #end __eq__
+
+    def __len__ (self):
+        """
+        Return the length of the range.
+
+
+        >>> len(IpRange('127.0.0.1'))
+        1
+        >>> len(IpRange('127/31'))
+        2
+        >>> len(IpRange('127/22'))
+        1024
+        """
+        return self._len
+    #end __len__
+
+    def __hash__ (self):
+        """
+        >>> a = IpRange('127.0.0.0/8')
+        >>> b = IpRange('127.0.0.0', '127.255.255.255')
+        >>> a.__hash__() == b.__hash__()
+        True
+        >>> c = IpRange('10/8')
+        >>> a.__hash__() == c.__hash__()
+        False
+        >>> b.__hash__() == c.__hash__()
+        False
+        """
+        return hash((self.startIp, self.endIp))
+    #end __hash__
+
+    def _cast (self, item):
+        if isinstance(item, basestring):
+            item = ip2long(item)
+        if type(item) not in [type(1), type(_MAX_IP)]:
+            raise TypeError(
+                "expected dotted-quad ip address or 32-bit integer")
+        return item
+    #end _cast
+
+    def index (self, item):
+        """
+        Return the 0-based position of `item` in this IpRange.
+
+
+        >>> r = IpRange('127.0.0.1', '127.255.255.255')
+        >>> r.index('127.0.0.1')
+        0
+        >>> r.index('127.255.255.255')
+        16777214
+        >>> r.index('10.0.0.1')
+        Traceback (most recent call last):
+            ...
+        ValueError: 10.0.0.1 is not in range
+
+
+        :param item: Dotted-quad ip address.
+        :type item: str
+        :returns: Index of ip address in range
+        """
+        item = self._cast(item)
+        offset = item - self.startIp
+        if offset >= 0 and offset < self._len:
+            return offset
+        raise ValueError('%s is not in range' % long2ip(item))
+    #end index
+
+    def count (self, item):
+        return int(item in self)
+    #end count
 
     def __contains__ (self, item):
         """
@@ -435,14 +525,67 @@ class IpRange (object):
         :type item: str
         :returns: ``True`` if address is in range, ``False`` otherwise.
         """
-        if isinstance(item, basestring):
-            item = ip2long(item)
-        if type(item) not in [type(1), type(_MAX_IP)]:
-            raise TypeError(
-                "expected dotted-quad ip address or 32-bit integer")
-
+        item = self._cast(item)
         return self.startIp <= item <= self.endIp
     #end __contains__
+
+    def __getitem__ (self, index):
+        """
+        >>> r = IpRange('127.0.0.1', '127.255.255.255')
+        >>> r[0]
+        '127.0.0.1'
+        >>> r[16777214]
+        '127.255.255.255'
+        >>> r[-1]
+        '127.255.255.255'
+        >>> r[len(r)]
+        Traceback (most recent call last):
+            ...
+        IndexError: index out of range
+
+        >>> r[:]
+        ('127.0.0.1', '127.255.255.255')
+        >>> r[1:]
+        ('127.0.0.2', '127.255.255.255')
+        >>> r[-2:]
+        ('127.255.255.254', '127.255.255.255')
+        >>> r[0:2]
+        ('127.0.0.1', '127.0.0.2')
+        >>> r[0:-1]
+        ('127.0.0.1', '127.255.255.254')
+        >>> r[:-2]
+        ('127.0.0.1', '127.255.255.253')
+        >>> r[::2]
+        Traceback (most recent call last):
+            ...
+        ValueError: slice step not supported
+        """
+        if isinstance(index, slice):
+            if index.step not in (None, 1):
+                #TODO: return an IpRangeList
+                raise ValueError('slice step not supported')
+            start = index.start or 0
+            if start < 0:
+                start = max(0, start + self._len)
+            if start >= self._len:
+                raise IndexError('start index out of range')
+
+            stop = index.stop or self._len
+            if stop < 0:
+                stop = max(start, stop + self._len)
+            if stop > self._len:
+                raise IndexError('stop index out of range')
+            return IpRange(
+                    long2ip(self.startIp + start),
+                    long2ip(self.startIp + stop - 1))
+
+        else:
+            if index < 0:
+                index = self._len + index
+            if index < 0 or index >= self._len:
+                raise IndexError('index out of range')
+            return long2ip(self.startIp + index)
+    #end __getitem__
 
     def __iter__ (self):
         """
@@ -464,21 +607,6 @@ class IpRange (object):
             yield long2ip(i)
             i += 1
     #end __iter__
-
-    def __len__ (self):
-        """
-        Return the length of the range.
-
-
-        >>> len(IpRange('127.0.0.1'))
-        1
-        >>> len(IpRange('127/31'))
-        2
-        >>> len(IpRange('127/22'))
-        1024
-        """
-        return self.endIp - self.startIp + 1
-    #end __len__
 #end class IpRange
 
 class IpRangeList (object):
