@@ -96,7 +96,6 @@ except NameError:
     # 'basestring' is undefined, must be python3k
     basestring = str
 
-
 try:
     next = next
 except NameError:
@@ -134,6 +133,9 @@ except NameError:
             return '0b' + ''.join(out)
     #end bin
 
+# end compatibility "fixes'
+
+
 _DOTTED_QUAD_RE = re.compile(r'^(\d{1,3}\.){0,3}\d{1,3}$')
 
 def validate_ip (s):
@@ -149,7 +151,7 @@ def validate_ip (s):
     True
     >>> validate_ip('127.0.0.256')
     False
-    >>> validate_ip(None)
+    >>> validate_ip(None) #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
     TypeError: expected string or buffer
@@ -187,7 +189,7 @@ def validate_cidr (s):
     False
     >>> validate_cidr('127.0.0.0')
     False
-    >>> validate_cidr(None)
+    >>> validate_cidr(None) #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
     TypeError: expected string or buffer
@@ -256,8 +258,6 @@ def validate_subnet (s):
 
     >>> validate_subnet('127.0.0.1/255.255.255.255')
     True
-    >>> validate_subnet(u'127.0.0.1/255.255.255.255')
-    True
     >>> validate_subnet('127.0/255.0.0.0')
     True
     >>> validate_subnet('127.0/255')
@@ -269,10 +269,6 @@ def validate_subnet (s):
     >>> validate_subnet('127.0.0.0')
     False
     >>> validate_subnet(None)
-    Traceback (most recent call last):
-        ...
-    TypeError: expected string or unicode
-    >>> validate_subnet(buffer('127.0.0.1/255.255.255.255'))
     Traceback (most recent call last):
         ...
     TypeError: expected string or unicode
@@ -371,7 +367,7 @@ def long2ip (l):
     Traceback (most recent call last):
         ...
     TypeError: expected int between 0 and 4294967295 inclusive
-    >>> long2ip(374297346592387463875L) #doctest: +IGNORE_EXCEPTION_DETAIL
+    >>> long2ip(374297346592387463875) #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
     TypeError: expected int between 0 and 4294967295 inclusive
