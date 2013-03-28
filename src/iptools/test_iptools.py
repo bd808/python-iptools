@@ -36,7 +36,10 @@ def additional_tests(): # for setup.py
     return doctest.DocTestSuite(iptools)
 
 def main():
-    unittest.TextTestRunner().run(additional_tests())
+    result = unittest.TextTestRunner().run(additional_tests())
+    if not result.wasSuccessful():
+      import sys
+      sys.exit(1)
 
 if __name__ == '__main__':
     main()
