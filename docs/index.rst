@@ -7,13 +7,16 @@ iptools's documentation
 =======================
 
 .. automodule:: iptools
-   :members: validate_ip, ip2long, long2ip, ip2hex, hex2ip, validate_cidr, cidr2block
+   :members:
+   :exclude-members: IpRange, IpRangeList
 
 .. autoclass:: IpRange
-   :members: __contains__, __iter__, __len__
+  :members:
+  :special-members:
 
 .. autoclass:: IpRangeList
-   :members: __contains__, __iter__, __len__
+  :members:
+  :special-members:
 
 Indices and tables
 ==================
