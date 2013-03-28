@@ -23,7 +23,7 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-"""Utitlities for dealing with IPv4 addresses.
+"""Utilities for dealing with IPv4 addresses.
 
   :Functions:
     - :func:`cidr2block`: Convert a CIDR notation ip address into a tuple
@@ -109,6 +109,30 @@ try:
 except ImportError:
     # python <2.6 doesn't have abc classes to extend
     Sequence = object
+
+try:
+    bin = bin
+except NameError:
+    # builtin bin function doesn't exist
+    def bin (x):
+        """
+        From http://code.activestate.com/recipes/219300/#c7
+        """
+        if x < 0:
+            return '-' + bin(-x)
+        out = []
+        if x == 0:
+            out.append('0')
+        while x > 0:
+            out.append('01'[x & 1])
+            x >>= 1
+            pass
+        try:
+            return '0b' + ''.join(reversed(out))
+        except NameError:
+            out.reverse()
+            return '0b' + ''.join(out)
+    #end bin
 
 _DOTTED_QUAD_RE = re.compile(r'^(\d{1,3}\.){0,3}\d{1,3}$')
 
