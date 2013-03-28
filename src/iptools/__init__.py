@@ -584,7 +584,11 @@ class IpRange (Sequence):
     """
     def __init__ (self, start, end=None):
         if end is None:
-            if isinstance(start, tuple):
+            if isinstance(start, IpRange):
+                # copy constructor
+                start, end = start[0], start[-1]
+
+            elif isinstance(start, tuple):
                 # occurs when IpRangeList calls via map to pass start and end
                 start, end = start
 
@@ -609,15 +613,28 @@ class IpRange (Sequence):
 
     def __repr__ (self):
         """
-        >>> print(IpRange('127.0.0.1'))
-        ('127.0.0.1', '127.0.0.1')
-        >>> print(IpRange('10/8'))
-        ('10.0.0.0', '10.255.255.255')
-        >>> print(IpRange('127.0.0.255', '127.0.0.0'))
-        ('127.0.0.0', '127.0.0.255')
+        >>> repr(IpRange('127.0.0.1'))
+        "IpRange('127.0.0.1', '127.0.0.1')"
+        >>> repr(IpRange('10/8'))
+        "IpRange('10.0.0.0', '10.255.255.255')"
+        >>> repr(IpRange('127.0.0.255', '127.0.0.0'))
+        "IpRange('127.0.0.0', '127.0.0.255')"
+        """
+        return "IpRange('%s', '%s')" % (
+                long2ip(self.startIp), long2ip(self.endIp))
+    #end __repr__
+
+    def __str__ (self):
+        """
+        >>> str(IpRange('127.0.0.1'))
+        "('127.0.0.1', '127.0.0.1')"
+        >>> str(IpRange('10/8'))
+        "('10.0.0.0', '10.255.255.255')"
+        >>> str(IpRange('127.0.0.255', '127.0.0.0'))
+        "('127.0.0.0', '127.0.0.255')"
         """
         return (long2ip(self.startIp), long2ip(self.endIp)).__repr__()
-    #end __repr__
+    #end __str__
 
     def __eq__ (self, other):
         """
@@ -745,17 +762,17 @@ class IpRange (Sequence):
         IndexError: index out of range
 
         >>> r[:]
-        ('127.0.0.1', '127.255.255.255')
+        IpRange('127.0.0.1', '127.255.255.255')
         >>> r[1:]
-        ('127.0.0.2', '127.255.255.255')
+        IpRange('127.0.0.2', '127.255.255.255')
         >>> r[-2:]
-        ('127.255.255.254', '127.255.255.255')
+        IpRange('127.255.255.254', '127.255.255.255')
         >>> r[0:2]
-        ('127.0.0.1', '127.0.0.2')
+        IpRange('127.0.0.1', '127.0.0.2')
         >>> r[0:-1]
-        ('127.0.0.1', '127.255.255.254')
+        IpRange('127.0.0.1', '127.255.255.254')
         >>> r[:-2]
-        ('127.0.0.1', '127.255.255.253')
+        IpRange('127.0.0.1', '127.255.255.253')
         >>> r[::2]
         Traceback (most recent call last):
             ...
@@ -844,11 +861,21 @@ class IpRangeList (object):
 
     def __repr__ (self):
         """
-        >>> print(IpRangeList('127.0.0.1', '10/8', '192.168/16'))
-        (('127.0.0.1', '127.0.0.1'), ('10.0.0.0', '10.255.255.255'), ('192.168.0.0', '192.168.255.255'))
+        >>> repr(IpRangeList('127.0.0.1', '10/8', '192.168/16'))
+        "IpRangeList(IpRange('127.0.0.1', '127.0.0.1'), IpRange('10.0.0.0', '10.255.255.255'), IpRange('192.168.0.0', '192.168.255.255'))"
+        >>> repr(IpRangeList(IpRange('127.0.0.1', '127.0.0.1'), IpRange('10.0.0.0', '10.255.255.255'), IpRange('192.168.0.0', '192.168.255.255')))
+        "IpRangeList(IpRange('127.0.0.1', '127.0.0.1'), IpRange('10.0.0.0', '10.255.255.255'), IpRange('192.168.0.0', '192.168.255.255'))"
         """
-        return self.ips.__repr__()
+        return "IpRangeList%r" % (self.ips,)
     #end __repr__
+
+    def __str__ (self):
+        """
+        >>> str(IpRangeList('127.0.0.1', '10/8', '192.168/16'))
+        "(('127.0.0.1', '127.0.0.1'), ('10.0.0.0', '10.255.255.255'), ('192.168.0.0', '192.168.255.255'))"
+        """
+        return "(%s)" % ", ".join(str(i) for i in self.ips)
+    #end __str__
 
     def __contains__ (self, item):
         """
