@@ -54,6 +54,8 @@
     - :class:`IpRangeList`: List of IpRange objects supporting ``in`` and
       iteration.
 
+  :Constants:
+    - :mod:`iptools.constants`: Common and special use IPv4 address blocks.
 
   The :class:`IpRangeList` object can be used in a django settings file to
   allow CIDR notation and/or (start, end) ranges to be used in the
@@ -88,6 +90,7 @@ __all__ = (
         )
 
 import re
+from . import constants
 
 # sniff for python2.x / python3k compatibility "fixes'
 try:
@@ -151,6 +154,8 @@ def validate_ip (s):
     True
     >>> validate_ip('127.0.0.256')
     False
+    >>> validate_ip(constants.LOCALHOST)
+    True
     >>> validate_ip(None) #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
@@ -189,6 +194,8 @@ def validate_cidr (s):
     False
     >>> validate_cidr('127.0.0.0')
     False
+    >>> validate_cidr(constants.LOOPBACK)
+    True
     >>> validate_cidr(None) #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
@@ -222,6 +229,8 @@ def validate_netmask (s):
     >>> validate_netmask('255.0.0.0')
     True
     >>> validate_netmask('255.255.255.255')
+    True
+    >>> validate_netmask(constants.BROADCAST)
     True
     >>> validate_netmask('128.0.0.1')
     False

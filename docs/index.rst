@@ -10,13 +10,25 @@ iptools's documentation
    :members:
    :exclude-members: IpRange, IpRangeList
 
+=======
+IpRange
+=======
 .. autoclass:: IpRange
   :members:
   :special-members:
 
+===========
+IpRangeList
+===========
 .. autoclass:: IpRangeList
   :members:
   :special-members:
+
+=========
+Constants
+=========
+.. automodule:: iptools.constants
+  :members:
 
 Indices and tables
 ==================
