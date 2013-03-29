@@ -1,16 +1,20 @@
 # -*- coding: utf-8 -*-
 
-import sys, os
+import sys
+import os
+import datetime
+
 sys.path.append(os.path.abspath('../src'))
+import iptools
 
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.viewcode']
 templates_path = ['_templates']
 source_suffix = '.rst'
 master_doc = 'index'
-project = u'python-iptools'
-copyright = u'2012, Bryan Davis'
-version = '0.4.0'
-release = '0.4.0'
+project = 'python-iptools'
+copyright = '%s, Bryan Davis. All Rights Reserved' % datetime.date.today().year
+version = iptools.__version__
+release = version
 exclude_patterns = ['_build']
 pygments_style = 'sphinx'
 
