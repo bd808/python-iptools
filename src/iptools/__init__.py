@@ -640,7 +640,7 @@ class IpRange (Sequence):
         >>> repr(IpRange('127.0.0.255', '127.0.0.0'))
         "IpRange('127.0.0.0', '127.0.0.255')"
         """
-        return "IpRange('%s', '%s')" % (
+        return "IpRange(%r, %r)" % (
                 long2ip(self.startIp), long2ip(self.endIp))
     #end __repr__
 
