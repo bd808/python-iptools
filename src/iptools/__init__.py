@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2008-2012, Bryan Davis
+# Copyright (c) 2008-2013, Bryan Davis
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
