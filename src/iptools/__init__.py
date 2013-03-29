@@ -23,7 +23,7 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-"""Utitlities for dealing with IPv4 addresses.
+"""Utilities for dealing with IPv4 addresses.
 
   :Functions:
     - :func:`cidr2block`: Convert a CIDR notation ip address into a tuple
@@ -96,7 +96,6 @@ except NameError:
     # 'basestring' is undefined, must be python3k
     basestring = str
 
-
 try:
     next = next
 except NameError:
@@ -109,6 +108,33 @@ try:
 except ImportError:
     # python <2.6 doesn't have abc classes to extend
     Sequence = object
+
+try:
+    bin = bin
+except NameError:
+    # builtin bin function doesn't exist
+    def bin (x):
+        """
+        From http://code.activestate.com/recipes/219300/#c7
+        """
+        if x < 0:
+            return '-' + bin(-x)
+        out = []
+        if x == 0:
+            out.append('0')
+        while x > 0:
+            out.append('01'[x & 1])
+            x >>= 1
+            pass
+        try:
+            return '0b' + ''.join(reversed(out))
+        except NameError:
+            out.reverse()
+            return '0b' + ''.join(out)
+    #end bin
+
+# end compatibility "fixes'
+
 
 _DOTTED_QUAD_RE = re.compile(r'^(\d{1,3}\.){0,3}\d{1,3}$')
 
@@ -125,7 +151,7 @@ def validate_ip (s):
     True
     >>> validate_ip('127.0.0.256')
     False
-    >>> validate_ip(None)
+    >>> validate_ip(None) #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
     TypeError: expected string or buffer
@@ -163,7 +189,7 @@ def validate_cidr (s):
     False
     >>> validate_cidr('127.0.0.0')
     False
-    >>> validate_cidr(None)
+    >>> validate_cidr(None) #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
     TypeError: expected string or buffer
@@ -232,8 +258,6 @@ def validate_subnet (s):
 
     >>> validate_subnet('127.0.0.1/255.255.255.255')
     True
-    >>> validate_subnet(u'127.0.0.1/255.255.255.255')
-    True
     >>> validate_subnet('127.0/255.0.0.0')
     True
     >>> validate_subnet('127.0/255')
@@ -245,10 +269,6 @@ def validate_subnet (s):
     >>> validate_subnet('127.0.0.0')
     False
     >>> validate_subnet(None)
-    Traceback (most recent call last):
-        ...
-    TypeError: expected string or unicode
-    >>> validate_subnet(buffer('127.0.0.1/255.255.255.255'))
     Traceback (most recent call last):
         ...
     TypeError: expected string or unicode
@@ -347,7 +367,7 @@ def long2ip (l):
     Traceback (most recent call last):
         ...
     TypeError: expected int between 0 and 4294967295 inclusive
-    >>> long2ip(374297346592387463875L) #doctest: +IGNORE_EXCEPTION_DETAIL
+    >>> long2ip(374297346592387463875) #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
     TypeError: expected int between 0 and 4294967295 inclusive
@@ -584,7 +604,11 @@ class IpRange (Sequence):
     """
     def __init__ (self, start, end=None):
         if end is None:
-            if isinstance(start, tuple):
+            if isinstance(start, IpRange):
+                # copy constructor
+                start, end = start[0], start[-1]
+
+            elif isinstance(start, tuple):
                 # occurs when IpRangeList calls via map to pass start and end
                 start, end = start
 
@@ -609,15 +633,28 @@ class IpRange (Sequence):
 
     def __repr__ (self):
         """
-        >>> print(IpRange('127.0.0.1'))
-        ('127.0.0.1', '127.0.0.1')
-        >>> print(IpRange('10/8'))
-        ('10.0.0.0', '10.255.255.255')
-        >>> print(IpRange('127.0.0.255', '127.0.0.0'))
-        ('127.0.0.0', '127.0.0.255')
+        >>> repr(IpRange('127.0.0.1'))
+        "IpRange('127.0.0.1', '127.0.0.1')"
+        >>> repr(IpRange('10/8'))
+        "IpRange('10.0.0.0', '10.255.255.255')"
+        >>> repr(IpRange('127.0.0.255', '127.0.0.0'))
+        "IpRange('127.0.0.0', '127.0.0.255')"
+        """
+        return "IpRange('%s', '%s')" % (
+                long2ip(self.startIp), long2ip(self.endIp))
+    #end __repr__
+
+    def __str__ (self):
+        """
+        >>> str(IpRange('127.0.0.1'))
+        "('127.0.0.1', '127.0.0.1')"
+        >>> str(IpRange('10/8'))
+        "('10.0.0.0', '10.255.255.255')"
+        >>> str(IpRange('127.0.0.255', '127.0.0.0'))
+        "('127.0.0.0', '127.0.0.255')"
         """
         return (long2ip(self.startIp), long2ip(self.endIp)).__repr__()
-    #end __repr__
+    #end __str__
 
     def __eq__ (self, other):
         """
@@ -745,17 +782,17 @@ class IpRange (Sequence):
         IndexError: index out of range
 
         >>> r[:]
-        ('127.0.0.1', '127.255.255.255')
+        IpRange('127.0.0.1', '127.255.255.255')
         >>> r[1:]
-        ('127.0.0.2', '127.255.255.255')
+        IpRange('127.0.0.2', '127.255.255.255')
         >>> r[-2:]
-        ('127.255.255.254', '127.255.255.255')
+        IpRange('127.255.255.254', '127.255.255.255')
         >>> r[0:2]
-        ('127.0.0.1', '127.0.0.2')
+        IpRange('127.0.0.1', '127.0.0.2')
         >>> r[0:-1]
-        ('127.0.0.1', '127.255.255.254')
+        IpRange('127.0.0.1', '127.255.255.254')
         >>> r[:-2]
-        ('127.0.0.1', '127.255.255.253')
+        IpRange('127.0.0.1', '127.255.255.253')
         >>> r[::2]
         Traceback (most recent call last):
             ...
@@ -844,11 +881,21 @@ class IpRangeList (object):
 
     def __repr__ (self):
         """
-        >>> print(IpRangeList('127.0.0.1', '10/8', '192.168/16'))
-        (('127.0.0.1', '127.0.0.1'), ('10.0.0.0', '10.255.255.255'), ('192.168.0.0', '192.168.255.255'))
+        >>> repr(IpRangeList('127.0.0.1', '10/8', '192.168/16'))
+        "IpRangeList(IpRange('127.0.0.1', '127.0.0.1'), IpRange('10.0.0.0', '10.255.255.255'), IpRange('192.168.0.0', '192.168.255.255'))"
+        >>> repr(IpRangeList(IpRange('127.0.0.1', '127.0.0.1'), IpRange('10.0.0.0', '10.255.255.255'), IpRange('192.168.0.0', '192.168.255.255')))
+        "IpRangeList(IpRange('127.0.0.1', '127.0.0.1'), IpRange('10.0.0.0', '10.255.255.255'), IpRange('192.168.0.0', '192.168.255.255'))"
         """
-        return self.ips.__repr__()
+        return "IpRangeList%r" % (self.ips,)
     #end __repr__
+
+    def __str__ (self):
+        """
+        >>> str(IpRangeList('127.0.0.1', '10/8', '192.168/16'))
+        "(('127.0.0.1', '127.0.0.1'), ('10.0.0.0', '10.255.255.255'), ('192.168.0.0', '192.168.255.255'))"
+        """
+        return "(%s)" % ", ".join(str(i) for i in self.ips)
+    #end __str__
 
     def __contains__ (self, item):
         """

@@ -1,6 +1,7 @@
 *.pyc
-src/iptools.egg-info
+.venv
 build
-setuptools-*.egg
 dist
 extras
+setuptools-*.egg
+src/iptools.egg-info
