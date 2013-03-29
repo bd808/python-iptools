@@ -79,10 +79,7 @@ Local documentation can be built using [Sphinx][]:
 Python Version Compatibility
 ----------------------------
 
-This library has been tested with Python versions 2.3.5, 2.6.2, & 2.3.1 on
-Ubuntu x86_64 and Python 2.6.1 & 2.6.4 on Snow Leopard.
-
-[Travis CI][ci-home] automatically runs tests against python 2.5, 2.6, 2.7, 3.2 and pypy on 32-bit Ubuntu Linux 11.10.
+[Travis CI][ci-home] automatically runs tests against python 2.5, 2.6, 2.7, 3.2, 3.3 and pypy on 32-bit Ubuntu Linux 11.10.
 
 Installing
 ----------
@@ -97,7 +94,7 @@ or easy_install:
 
 Install the latest development version:
 
-    git clone git://github.com/bd808/python-iptools.git
+    git clone https://github.com/bd808/python-iptools.git
     cd python-iptools
     python setup.py install
 

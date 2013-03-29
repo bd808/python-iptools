@@ -7,6 +7,7 @@ Migrated source to github
 Integrated with TravisCI
 Integrated with ReadTheDocs
 Support Sequence operations in IpRange
+Added netmask functions
 
 0.4
 ---
