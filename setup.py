@@ -19,7 +19,7 @@ setup(
     version = version,
     description = 'Python utilites for manipulating IPv4 addresses',
     long_description = "Utilities for manipulating IPv4 addresses including a class that can be used to include CIDR network blocks in Django's INTERNAL_IPS setting.",
-    url = 'http://python-iptools.googlecode.com',
+    url = 'https://github.com/bd808/python-iptools',
     download_url = 'http://pypi.python.org/packages/source/i/iptools/',
     author = 'Bryan Davis',
     author_email = 'bd808@bd808.com',
