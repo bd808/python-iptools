@@ -101,7 +101,8 @@ MULTICAST_INTERNETWORK = "224.0.1.0/24"
 #: (`RFC 1700 <https://tools.ietf.org/html/rfc1700>`_)
 RESERVED = "240.0.0.0/4"
 
-#: Broadcast messages to the current network (only valid as destination address)
+#: Broadcast messages to the current network
+#: (only valid as destination address)
 #: (`RFC 919 <https://tools.ietf.org/html/rfc919>`_)
 BROADCAST = "255.255.255.255"
 

@@ -26,9 +26,9 @@
 __version__ = '0.6.0-dev'
 
 __all__ = (
-        'IpRange',
-        'IpRangeList',
-        )
+    'IpRange',
+    'IpRangeList',
+)
 
 # sniff for python2.x / python3k compatibility "fixes'
 try:
@@ -41,7 +41,7 @@ try:
     next = next
 except NameError:
     # builtin next function doesn't exist
-    def next (iterable):
+    def next(iterable):
         return iterable.next()
 
 try:
@@ -53,6 +53,7 @@ except ImportError:
 # end compatibility "fixes'
 
 from . import ipv4
+
 
 class IpRange (Sequence):
     """
@@ -93,7 +94,7 @@ class IpRange (Sequence):
     :param end: Ip address in dotted quad format or ``None``.
     :type end: str
     """
-    def __init__ (self, start, end=None):
+    def __init__(self, start, end=None):
         if end is None:
             if isinstance(start, IpRange):
                 # copy constructor
@@ -122,7 +123,7 @@ class IpRange (Sequence):
         self._len = self.endIp - self.startIp + 1
     #end __init__
 
-    def __repr__ (self):
+    def __repr__(self):
         """
         >>> repr(IpRange('127.0.0.1'))
         "IpRange('127.0.0.1', '127.0.0.1')"
@@ -132,10 +133,10 @@ class IpRange (Sequence):
         "IpRange('127.0.0.0', '127.0.0.255')"
         """
         return "IpRange(%r, %r)" % (
-                ipv4.long2ip(self.startIp), ipv4.long2ip(self.endIp))
+            ipv4.long2ip(self.startIp), ipv4.long2ip(self.endIp))
     #end __repr__
 
-    def __str__ (self):
+    def __str__(self):
         """
         >>> str(IpRange('127.0.0.1'))
         "('127.0.0.1', '127.0.0.1')"
@@ -144,10 +145,11 @@ class IpRange (Sequence):
         >>> str(IpRange('127.0.0.255', '127.0.0.0'))
         "('127.0.0.0', '127.0.0.255')"
         """
-        return (ipv4.long2ip(self.startIp), ipv4.long2ip(self.endIp)).__repr__()
+        return (
+            ipv4.long2ip(self.startIp), ipv4.long2ip(self.endIp)).__repr__()
     #end __str__
 
-    def __eq__ (self, other):
+    def __eq__(self, other):
         """
         >>> IpRange('127.0.0.1') == IpRange('127.0.0.1')
         True
@@ -157,11 +159,11 @@ class IpRange (Sequence):
         True
         """
         return isinstance(other, IpRange) and \
-                self.startIp == other.startIp and \
-                self.endIp == other.endIp
+            self.startIp == other.startIp and \
+            self.endIp == other.endIp
     #end __eq__
 
-    def __len__ (self):
+    def __len__(self):
         """
         Return the length of the range.
 
@@ -176,7 +178,7 @@ class IpRange (Sequence):
         return self._len
     #end __len__
 
-    def __hash__ (self):
+    def __hash__(self):
         """
         >>> a = IpRange('127.0.0.0/8')
         >>> b = IpRange('127.0.0.0', '127.255.255.255')
@@ -191,7 +193,7 @@ class IpRange (Sequence):
         return hash((self.startIp, self.endIp))
     #end __hash__
 
-    def _cast (self, item):
+    def _cast(self, item):
         if isinstance(item, basestring):
             item = ipv4.ip2long(item)
         if type(item) not in [type(1), type(ipv4._MAX_IP)]:
@@ -200,7 +202,7 @@ class IpRange (Sequence):
         return item
     #end _cast
 
-    def index (self, item):
+    def index(self, item):
         """
         Return the 0-based position of `item` in this IpRange.
 
@@ -227,11 +229,11 @@ class IpRange (Sequence):
         raise ValueError('%s is not in range' % ipv4.long2ip(item))
     #end index
 
-    def count (self, item):
+    def count(self, item):
         return int(item in self)
     #end count
 
-    def __contains__ (self, item):
+    def __contains__(self, item):
         """
         Implements membership test operators ``in`` and ``not in`` for the
         address range.
@@ -258,7 +260,7 @@ class IpRange (Sequence):
         return self.startIp <= item <= self.endIp
     #end __contains__
 
-    def __getitem__ (self, index):
+    def __getitem__(self, index):
         """
         >>> r = IpRange('127.0.0.1', '127.255.255.255')
         >>> r[0]
@@ -305,8 +307,8 @@ class IpRange (Sequence):
             if stop > self._len:
                 raise IndexError('stop index out of range')
             return IpRange(
-                    ipv4.long2ip(self.startIp + start),
-                    ipv4.long2ip(self.startIp + stop - 1))
+                ipv4.long2ip(self.startIp + start),
+                ipv4.long2ip(self.startIp + stop - 1))
 
         else:
             if index < 0:
@@ -316,7 +318,7 @@ class IpRange (Sequence):
             return ipv4.long2ip(self.startIp + index)
     #end __getitem__
 
-    def __iter__ (self):
+    def __iter__(self):
         """
         Return an iterator over ip addresses in the range.
 
@@ -338,6 +340,7 @@ class IpRange (Sequence):
     #end __iter__
 #end class IpRange
 
+
 class IpRangeList (object):
     """
     List of IpRange objects.
@@ -350,7 +353,8 @@ class IpRangeList (object):
     a smart object which allows CIDR notation.
 
 
-    >>> INTERNAL_IPS = IpRangeList('127.0.0.1','10/8',('192.168.0.1','192.168.255.255'))
+    >>> INTERNAL_IPS = IpRangeList(
+    ...     '127.0.0.1','10/8',('192.168.0.1','192.168.255.255'))
     >>> '127.0.0.1' in INTERNAL_IPS
     True
     >>> '10.10.10.10' in INTERNAL_IPS
@@ -366,21 +370,24 @@ class IpRangeList (object):
         format.
     :type \*args: list of str and/or tuple
     """
-    def __init__ (self, *args):
+    def __init__(self, *args):
         self.ips = tuple(map(IpRange, args))
     #end __init__
 
-    def __repr__ (self):
+    def __repr__(self):
         """
         >>> repr(IpRangeList('127.0.0.1', '10/8', '192.168/16'))
         "IpRangeList(IpRange('127.0.0.1', '127.0.0.1'), IpRange('10.0.0.0', '10.255.255.255'), IpRange('192.168.0.0', '192.168.255.255'))"
-        >>> repr(IpRangeList(IpRange('127.0.0.1', '127.0.0.1'), IpRange('10.0.0.0', '10.255.255.255'), IpRange('192.168.0.0', '192.168.255.255')))
+        >>> repr(
+        ...     IpRangeList(IpRange('127.0.0.1', '127.0.0.1'),
+        ...     IpRange('10.0.0.0', '10.255.255.255'),
+        ...     IpRange('192.168.0.0', '192.168.255.255')))
         "IpRangeList(IpRange('127.0.0.1', '127.0.0.1'), IpRange('10.0.0.0', '10.255.255.255'), IpRange('192.168.0.0', '192.168.255.255'))"
         """
         return "IpRangeList%r" % (self.ips,)
     #end __repr__
 
-    def __str__ (self):
+    def __str__(self):
         """
         >>> str(IpRangeList('127.0.0.1', '10/8', '192.168/16'))
         "(('127.0.0.1', '127.0.0.1'), ('10.0.0.0', '10.255.255.255'), ('192.168.0.0', '192.168.255.255'))"
@@ -388,7 +395,7 @@ class IpRangeList (object):
         return "(%s)" % ", ".join(str(i) for i in self.ips)
     #end __str__
 
-    def __contains__ (self, item):
+    def __contains__(self, item):
         """
         Implements membership test operators ``in`` and ``not in`` for the
         address ranges contained in the list.
@@ -417,7 +424,7 @@ class IpRangeList (object):
         return False
     #end __contains__
 
-    def __iter__ (self):
+    def __iter__(self):
         """
         Return an iterator over all ip addresses in the list.
 
@@ -445,7 +452,7 @@ class IpRangeList (object):
                 yield ip
     #end __iter__
 
-    def __len__ (self):
+    def __len__(self):
         """
         Return the length of all ranges in the list.
 

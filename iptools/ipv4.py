@@ -25,19 +25,19 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 __all__ = (
-        'cidr2block',
-        'hex2ip',
-        'ip2hex',
-        'ip2long',
-        'ip2network',
-        'long2ip',
-        'netmask2prefix',
-        'validate_cidr',
-        'validate_ip',
-        'validate_netmask',
-        'validate_subnet',
-        'subnet2block',
-        )
+    'cidr2block',
+    'hex2ip',
+    'ip2hex',
+    'ip2long',
+    'ip2network',
+    'long2ip',
+    'netmask2prefix',
+    'validate_cidr',
+    'validate_ip',
+    'validate_netmask',
+    'validate_subnet',
+    'subnet2block',
+)
 
 import re
 
@@ -52,7 +52,7 @@ try:
     bin = bin
 except NameError:
     # builtin bin function doesn't exist
-    def bin (x):
+    def bin(x):
         """
         From http://code.activestate.com/recipes/219300/#c7
         """
@@ -74,10 +74,19 @@ except NameError:
 
 # end compatibility "fixes'
 
-
+#: Regex for validating an IPv4 address
 _DOTTED_QUAD_RE = re.compile(r'^(\d{1,3}\.){0,3}\d{1,3}$')
 
-def validate_ip (s):
+#: Regex for validating a CIDR network
+_CIDR_RE = re.compile(r'^(\d{1,3}\.){0,3}\d{1,3}/\d{1,2}$')
+
+#: Mamimum IPv4 integer
+_MAX_IP = 0xffffffff
+#: Minimum IPv4 integer
+_MIN_IP = 0x0
+
+
+def validate_ip(s):
     """Validate a dotted-quad ip address.
 
     The string is considered a valid dotted-quad address if it consists of
@@ -113,9 +122,8 @@ def validate_ip (s):
     return False
 #end validate_ip
 
-_CIDR_RE = re.compile(r'^(\d{1,3}\.){0,3}\d{1,3}/\d{1,2}$')
 
-def validate_cidr (s):
+def validate_cidr(s):
     """Validate a CIDR notation ip address.
 
     The string is considered a valid CIDR address if it consists of one to
@@ -156,7 +164,8 @@ def validate_cidr (s):
     return False
 #end validate_cidr
 
-def validate_netmask (s):
+
+def validate_netmask(s):
     """Validate that a dotted-quad ip address is a valid netmask.
 
 
@@ -195,7 +204,8 @@ def validate_netmask (s):
         return False
 #end validate_netmask
 
-def validate_subnet (s):
+
+def validate_subnet(s):
     """Validate a dotted-quad ip address including a netmask.
 
     The string is considered a valid dotted-quad address with netmask if it
@@ -237,7 +247,8 @@ def validate_subnet (s):
     raise TypeError("expected string or unicode")
 #end validate_subnet
 
-def ip2long (ip):
+
+def ip2long(ip):
     """Convert a dotted-quad ip address to a network byte order 32-bit
     integer.
 
@@ -265,7 +276,7 @@ def ip2long (ip):
     elif len(quads) < 4:
         # partial form, last supplied quad is host address, rest is network
         host = quads[-1:]
-        quads = quads[:-1] + [0,] * (4 - len(quads)) + host
+        quads = quads[:-1] + [0, ] * (4 - len(quads)) + host
 
     lngip = 0
     for q in quads:
@@ -273,7 +284,8 @@ def ip2long (ip):
     return lngip
 #end ip2long
 
-def ip2network (ip):
+
+def ip2network(ip):
     """Convert a dotted-quad ip to base network number.
 
     This differs from :func:`ip2long` in that partial addresses as treated as
@@ -293,10 +305,8 @@ def ip2network (ip):
     return netw
 #end ip2network
 
-_MAX_IP = 0xffffffff
-_MIN_IP = 0x0
 
-def long2ip (l):
+def long2ip(l):
     """Convert a network byte order 32-bit integer to a dotted quad ip
     address.
 
@@ -332,10 +342,12 @@ def long2ip (l):
     """
     if _MAX_IP < l or l < 0:
         raise TypeError("expected int between 0 and %d inclusive" % _MAX_IP)
-    return '%d.%d.%d.%d' % (l>>24 & 255, l>>16 & 255, l>>8 & 255, l & 255)
+    return '%d.%d.%d.%d' % (
+        l >> 24 & 255, l >> 16 & 255, l >> 8 & 255, l & 255)
 #end long2ip
 
-def ip2hex (addr):
+
+def ip2hex(addr):
     """Convert a dotted-quad ip address to a hex encoded number.
 
 
@@ -364,7 +376,8 @@ def ip2hex (addr):
     return "%08x" % netip
 #end ip2hex
 
-def hex2ip (hex_str):
+
+def hex2ip(hex_str):
     """Convert a hex encoded integer to a dotted-quad ip address.
 
 
@@ -391,7 +404,8 @@ def hex2ip (hex_str):
     return long2ip(netip)
 #end hex2ip
 
-def cidr2block (cidr):
+
+def cidr2block(cidr):
     """Convert a CIDR notation ip address into a tuple containing the network
     block start and end addresses.
 
@@ -427,7 +441,8 @@ def cidr2block (cidr):
     return _block_from_ip_and_prefix(network, prefix)
 #end cidr2block
 
-def netmask2prefix (mask):
+
+def netmask2prefix(mask):
     """Convert a dotted-quad netmask into a CIDR prefix.
 
 
@@ -454,7 +469,8 @@ def netmask2prefix (mask):
     return 0
 #end netmask2prefix
 
-def subnet2block (subnet):
+
+def subnet2block(subnet):
     """Convert a dotted-quad ip address including a netmask into a tuple
     containing the network block start and end addresses.
 
@@ -491,7 +507,8 @@ def subnet2block (subnet):
     return _block_from_ip_and_prefix(network, prefix)
 #end subnet2block
 
-def _block_from_ip_and_prefix (ip, prefix):
+
+def _block_from_ip_and_prefix(ip, prefix):
     """Create a tuple of (start, end) dotted-quad addresses from the given
     ip address and prefix length.
 

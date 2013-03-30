@@ -25,9 +25,12 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 import re
+
+#: Regex for validating an IPv6 in hex notation
 _HEX_RE = re.compile(r'^([0-9a-f]{0,4}:){2,7}[0-9a-f]{0,4}$')
 
-def validate_ip (s):
+
+def validate_ip(s):
     """Validate a hexidecimal IPv6 ip address.
 
 
@@ -57,7 +60,8 @@ def validate_ip (s):
 
     :param s: String to validate as a hexidecimal IPv6 ip address.
     :type s: str
-    :returns: ``True`` if a valid hexidecimal IPv6 ip address, ``False`` otherwise.
+    :returns: ``True`` if a valid hexidecimal IPv6 ip address,
+              ``False`` otherwise.
     :raises: TypeError
     """
     if _HEX_RE.match(s):
@@ -65,7 +69,8 @@ def validate_ip (s):
     return False
 #end validate_ip
 
-def ip2long (ip):
+
+def ip2long(ip):
     """Convert a hexidecimal IPv6 address to a network byte order 128-bit
     integer.
 
