@@ -31,9 +31,12 @@ Tests for iptools
 import doctest
 import unittest
 import iptools
+from iptools import ipv6
 
 def additional_tests(): # for setup.py
-    return doctest.DocTestSuite(iptools)
+    tests = doctest.DocTestSuite(iptools)
+    tests.addTests(doctest.DocTestSuite(ipv6))
+    return tests
 
 def main():
     result = unittest.TextTestRunner().run(additional_tests())
