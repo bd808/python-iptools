@@ -1,7 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import sys
 from iptools import __version__
 from setuptools import setup, find_packages
+
+setup_requires=[]
+if 'nosetests' in sys.argv[1:]:
+  setup_requires.append('nose>=1.0')
 
 setup(
     name = 'iptools',
@@ -16,6 +21,7 @@ setup(
     packages = find_packages(),
     include_package_data = True,
     test_suite='tests',
+    setup_requires=setup_requires,
     classifiers = [
       'Development Status :: 4 - Beta',
       'Environment :: Web Environment',

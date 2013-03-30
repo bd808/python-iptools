@@ -116,16 +116,4 @@ def ip2long (ip):
     return lngip
 #end ip2long
 
-
-def _test ():
-    import doctest
-    failure, nbtest = doctest.testmod()
-    if failure:
-        import sys
-        sys.exit(1)
-#end _test
-
-if __name__ == '__main__':
-    _test()
-
 # vim: set sw=4 ts=4 sts=4 et :
