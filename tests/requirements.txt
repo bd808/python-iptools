@@ -1,0 +1,5 @@
+sphinx
+nose
+coverage
+nosexcover
+flake8

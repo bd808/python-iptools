@@ -3,5 +3,5 @@
 build
 dist
 extras
+iptools.egg-info
 setuptools-*.egg
-src/iptools.egg-info

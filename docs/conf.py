@@ -2,17 +2,17 @@
 
 import sys
 import os
-import datetime
+from datetime import date
 
-sys.path.append(os.path.abspath('../src'))
+sys.path.insert(0, os.path.abspath(os.path.join(os.getcwd(), '..')))
 import iptools
 
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.viewcode']
 templates_path = ['_templates']
 source_suffix = '.rst'
 master_doc = 'index'
-project = 'python-iptools'
-copyright = '%s, Bryan Davis. All Rights Reserved' % datetime.date.today().year
+project = 'iptools'
+copyright = '%s, Bryan Davis. All Rights Reserved' % date.today().year
 version = iptools.__version__
 release = version
 exclude_patterns = ['_build']
