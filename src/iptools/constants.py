@@ -104,3 +104,5 @@ RESERVED                = "240.0.0.0/4"
 #: Broadcast messages to the current network (only valid as destination address)
 #: (`RFC 919 <https://tools.ietf.org/html/rfc919>`_)
 BROADCAST               = "255.255.255.255"
+
+# vim: set sw=4 ts=4 sts=4 et :
