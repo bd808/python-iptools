@@ -212,7 +212,7 @@ def long2ip(l):
     # format as one big hex value
     hex_str = '%032x' % l
     # split into double octet chunks without padding zeros
-    hextets = ['%x' % int(hex_str[x:x+4], 16) for x in range(0, 32, 4)]
+    hextets = ['%x' % int(hex_str[x:x + 4], 16) for x in range(0, 32, 4)]
 
     # find and remove left most longest run of zeros
     dc_start, dc_len = (-1, 0)
