@@ -25,3 +25,5 @@ else:
     html_theme = 'nature'
 html_static_path = ['_static']
 htmlhelp_basename = 'iptoolsdoc'
+
+autodoc_member_order = 'groupwise'

@@ -196,7 +196,7 @@ class IpRange (Sequence):
     def _cast(self, item):
         if isinstance(item, basestring):
             item = ipv4.ip2long(item)
-        if type(item) not in [type(1), type(ipv4._MAX_IP)]:
+        if type(item) not in [type(1), type(ipv4.MAX_IP)]:
             raise TypeError(
                 "expected dotted-quad ip address or 32-bit integer")
         return item
@@ -377,12 +377,18 @@ class IpRangeList (object):
     def __repr__(self):
         """
         >>> repr(IpRangeList('127.0.0.1', '10/8', '192.168/16'))
-        "IpRangeList(IpRange('127.0.0.1', '127.0.0.1'), IpRange('10.0.0.0', '10.255.255.255'), IpRange('192.168.0.0', '192.168.255.255'))"
+        ... #doctest: +NORMALIZE_WHITESPACE
+        "IpRangeList(IpRange('127.0.0.1', '127.0.0.1'),
+        IpRange('10.0.0.0', '10.255.255.255'),
+        IpRange('192.168.0.0', '192.168.255.255'))"
         >>> repr(
         ...     IpRangeList(IpRange('127.0.0.1', '127.0.0.1'),
         ...     IpRange('10.0.0.0', '10.255.255.255'),
         ...     IpRange('192.168.0.0', '192.168.255.255')))
-        "IpRangeList(IpRange('127.0.0.1', '127.0.0.1'), IpRange('10.0.0.0', '10.255.255.255'), IpRange('192.168.0.0', '192.168.255.255'))"
+        ... #doctest: +NORMALIZE_WHITESPACE
+        "IpRangeList(IpRange('127.0.0.1', '127.0.0.1'),
+        IpRange('10.0.0.0', '10.255.255.255'),
+        IpRange('192.168.0.0', '192.168.255.255'))"
         """
         return "IpRangeList%r" % (self.ips,)
     #end __repr__
@@ -390,7 +396,10 @@ class IpRangeList (object):
     def __str__(self):
         """
         >>> str(IpRangeList('127.0.0.1', '10/8', '192.168/16'))
-        "(('127.0.0.1', '127.0.0.1'), ('10.0.0.0', '10.255.255.255'), ('192.168.0.0', '192.168.255.255'))"
+        ... #doctest: +NORMALIZE_WHITESPACE
+        "(('127.0.0.1', '127.0.0.1'),
+        ('10.0.0.0', '10.255.255.255'),
+        ('192.168.0.0', '192.168.255.255'))"
         """
         return "(%s)" % ", ".join(str(i) for i in self.ips)
     #end __str__

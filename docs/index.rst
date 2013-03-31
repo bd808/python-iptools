@@ -1,76 +1,120 @@
-==============================
+##############################
 iptools - IP Address Utilities
-==============================
+##############################
+The iptools_ package is a collection of utilities for dealing with IP
+addresses.
 
-Utilities for dealing with IPv4 addresses.
+The project was inspired by a desire to be able to use CIDR_ address notation
+to designate ``INTERNAL_IPS`` in a Django_ project's settings file.
 
-  :Functions:
-    - :func:`cidr2block`: Convert a CIDR notation ip address into a tuple
-      containing network block start and end addresses.
-    - :func:`hex2ip`: Convert a hex encoded network byte order 32-bit
-      integer to a dotted-quad ip address.
-    - :func:`ip2hex`: Convert a dotted-quad ip address to a hex encoded
-      network byte order 32-bit integer.
-    - :func:`ip2long`: Convert a dotted-quad ip address to a network byte
-      order 32-bit integer.
-    - :func:`ip2network`: Convert a dotted-quad ip to base network number.
-    - :func:`long2ip`: Convert a network byte order 32-bit integer to
-      a dotted quad ip address.
-    - :func:`netmask2prefix`: Convert a dotted-quad netmask into a CIDR
-      prefix.
-    - :func:`subnet2block`: Convert a dotted-quad ip address including
-      a netmask into a tuple containing the network block start and end
-      addresses.
-    - :func:`validate_cidr`: Validate a CIDR notation ip address.
-    - :func:`validate_ip`: Validate a dotted-quad ip address.
-    - :func:`validate_netmask`: Validate that a dotted-quad ip address is
-      a valid netmask.
-    - :func:`validate_subnet`: Validate a dotted-quad ip address including
-      a netmask.
 
-  :Objects:
-    - :class:`IpRange`: Range of ip addresses supporting ``in`` and iteration.
-    - :class:`IpRangeList`: List of IpRange objects supporting ``in`` and
-      iteration.
+************
+Installation
+************
+Install the latest stable version from PyPi using pip_:
 
-  :Constants:
-    - :mod:`iptools.constants`: Common and special use IPv4 address blocks.
+.. code-block:: bash
 
-  The :class:`IpRangeList` object can be used in a django settings file to
-  allow CIDR notation and/or (start, end) ranges to be used in the
-  INTERNAL_IPS list.
+    pip install iptools
 
-  **Example**::
+or setuptools_:
 
-    INTERNAL_IPS = IpRangeList(
-        '127.0.0.1',
-        '192.168/16',
-        ('10.0.0.1', '10.0.0.19'),
-        )
+.. code-block:: bash
 
-.. automodule:: iptools
-   :members:
-   :exclude-members: IpRange, IpRangeList
+    easy_install iptools
 
-IpRange
-=======
-.. autoclass:: IpRange
-  :members:
-  :special-members:
+Install the latest development version:
+
+.. code-block:: bash
+
+    git clone https://github.com/bd808/python-iptools.git
+    cd python-iptools
+    python setup.py install
+
+
+******************************
+Using with Django INTERNAL_IPS
+******************************
+An :class:`iptools.IpRangeList` object can be used in a Django_ settings file
+to allow CIDR_ and/or ``(start, end)`` ranges to be used in the
+``INTERNAL_IPS`` list.
+
+There are many internal and add-on components for Django_ that use the
+INTERNAL_IPS_ configuration setting to alter application behavior or make
+debugging easier. When you are developing and testing an application by
+yourself it's easy to add the ip address that your web browser will be coming
+from to this list. When you are developing in a group or testing from many ips
+it can become cumbersome to add more and more ip addresses to the setting
+individually.
+
+The :class:`iptools.IpRangeList` object can help by replacing the standard
+tuple of addresses recommended by the Django docs with an intelligent object
+that responds to the membership test operator in. This object can be
+configured with dotted quad IP addresses like the default ``INTERNAL_IPS``
+tuple (eg. '127.0.0.1'), CIDR_ block notation (eg. '127/8', '192.168/16') for
+entire network blocks, and/or (start, end) tuples describing an arbitrary
+range of IP addresses.
+
+Django_'s internal checks against the ``INTERNAL_IPS`` tuple take the form
+``if addr in INTERNAL_IPS`` or ``if addr not in INTERNAL_IPS``. This works
+transparently with the :class:`iptools.IpRangeList` object because it
+implements the magic method ``__contains__`` which python calls when the
+``in`` or ``not in`` operators are used.
+
+.. code-block:: python
+
+    import iptools
+
+    INTERNAL_IPS = iptools.IpRangeList(
+        '127.0.0.1',                # single ip
+        '192.168/16',               # CIDR network block
+        ('10.0.0.1', '10.0.0.19'),  # arbitrary inclusive range
+    )
+
+
+***
+API
+***
 
 IpRangeList
 ===========
-.. autoclass:: IpRangeList
+.. autoclass:: iptools.IpRangeList
   :members:
   :special-members:
+  :show-inheritance:
 
-Constants
-=========
-.. automodule:: iptools.constants
+
+IpRange
+=======
+.. autoclass:: iptools.IpRange
   :members:
+  :special-members:
+  :show-inheritance:
 
+
+IPv4
+====
+.. automodule:: iptools.ipv4
+  :members:
+  :show-inheritance:
+
+
+IPv6
+====
+.. automodule:: iptools.ipv6
+  :members:
+  :show-inheritance:
+
+
+******************
 Indices and tables
-==================
-
+******************
 * :ref:`genindex`
 * :ref:`search`
+
+.. _iptools: http://pypi.python.org/pypi/iptools
+.. _Django: http://www.djangoproject.com/
+.. _pip: http://www.pip-installer.org/en/latest/
+.. _setuptools: https://pypi.python.org/pypi/setuptools
+.. _CIDR: http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing
+.. _INTERNAL_IPS: http://docs.djangoproject.com/en/dev/ref/settings/#internal-ips
