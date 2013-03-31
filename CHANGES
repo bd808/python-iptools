@@ -3,6 +3,8 @@ Changes
 
 0.6
 ---
+Support IPv6 addresses in IpRange and IpRangeList
+Utility functions for IPv6 addresses
 
 0.5
 ---
