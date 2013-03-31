@@ -190,6 +190,7 @@ RESERVED = "240.0.0.0/4"
 #: (`RFC 919 <https://tools.ietf.org/html/rfc919>`_)
 BROADCAST = "255.255.255.255"
 
+
 def validate_ip(s):
     """Validate a dotted-quad ip address.
 

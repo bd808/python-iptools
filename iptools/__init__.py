@@ -115,7 +115,7 @@ class IpRange (Sequence):
     >>> 2130706433 in r
     False
     >>> r = IpRange('::ffff:ffff:0000/120')
-    >>> for ip in r: 
+    >>> for ip in r:
     ...     print(ip) # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
     ::ffff:ffff:0 ... ::ffff:ffff:6d ... ::ffff:ffff:ff
 
