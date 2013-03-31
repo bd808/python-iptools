@@ -24,44 +24,46 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-# __all__ = (
-#     'cidr2block',
-#     'hex2ip',
-#     'ip2hex',
-#     'ip2long',
-#     'ip2network',
-#     'long2ip',
-#     'netmask2prefix',
-#     'subnet2block',
-#     'validate_cidr',
-#     'validate_ip',
-#     'validate_netmask',
-#     'validate_subnet',
-#     'BENCHMARK_TESTS',
-#     'BROADCAST',
-#     'CURRENT_NETWORK',
-#     'DUAL_STACK_LITE',
-#     'IETF_PROTOCOL_RESERVED',
-#     'IPV6_TO_IPV4_RELAY',
-#     'LINK_LOCAL',
-#     'LOCALHOST',
-#     'LOOPBACK',
-#     'MAX_IP',
-#     'MIN_IP',
-#     'MULTICAST',
-#     'MULTICAST_INTERNETWORK',
-#     'MULTICAST_LOCAL',
-#     'PRIVATE_NETWORK_10',
-#     'PRIVATE_NETWORK_172_16',
-#     'PRIVATE_NETWORK_192_168',
-#     'RESERVED',
-#     'SHARED_ADDRESS_SPACE',
-#     'TEST_NET_1',
-#     'TEST_NET_2',
-#     'TEST_NET_3',
-# )
+__all__ = (
+    'cidr2block',
+    'hex2ip',
+    'ip2hex',
+    'ip2long',
+    'ip2network',
+    'long2ip',
+    'netmask2prefix',
+    'subnet2block',
+    'validate_cidr',
+    'validate_ip',
+    'validate_netmask',
+    'validate_subnet',
+    'BENCHMARK_TESTS',
+    'BROADCAST',
+    'CURRENT_NETWORK',
+    'DUAL_STACK_LITE',
+    'IETF_PROTOCOL_RESERVED',
+    'IPV6_TO_IPV4_RELAY',
+    'LINK_LOCAL',
+    'LOCALHOST',
+    'LOOPBACK',
+    'MAX_IP',
+    'MIN_IP',
+    'MULTICAST',
+    'MULTICAST_INTERNETWORK',
+    'MULTICAST_LOCAL',
+    'PRIVATE_NETWORK_10',
+    'PRIVATE_NETWORK_172_16',
+    'PRIVATE_NETWORK_192_168',
+    'RESERVED',
+    'SHARED_ADDRESS_SPACE',
+    'TEST_NET_1',
+    'TEST_NET_2',
+    'TEST_NET_3',
+)
+
 
 import re
+
 
 # sniff for python2.x / python3k compatibility "fixes'
 try:
@@ -93,8 +95,8 @@ except NameError:
             out.reverse()
             return '0b' + ''.join(out)
     #end bin
-
 # end compatibility "fixes'
+
 
 #: Regex for validating an IPv4 address
 _DOTTED_QUAD_RE = re.compile(r'^(\d{1,3}\.){0,3}\d{1,3}$')
@@ -227,9 +229,9 @@ def validate_ip(s):
 def validate_cidr(s):
     """Validate a CIDR notation ip address.
 
-    The string is considered a valid CIDR address if it consists of one to
-    four octets (0-255) seperated by periods (.) followed by a forward slash
-    (/) and a bit mask length (1-32).
+    The string is considered a valid CIDR address if it consists of a valid
+    IPv4 address in dotted-quad format followed by a forward slash (/) and
+    a bit mask length (1-32).
 
 
     >>> validate_cidr('127.0.0.1/32')
@@ -242,6 +244,8 @@ def validate_cidr(s):
     False
     >>> validate_cidr(LOOPBACK)
     True
+    >>> validate_cidr('127.0.0.1/33')
+    False
     >>> validate_cidr(None) #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
@@ -439,7 +443,7 @@ def long2ip(l):
     :returns: Dotted-quad ip address (eg. '127.0.0.1').
     :raises: TypeError
     """
-    if MAX_IP < l or l < 0:
+    if MAX_IP < l or l < MIN_IP:
         raise TypeError(
             "expected int between %d and %d inclusive" % (MIN_IP, MAX_IP))
     return '%d.%d.%d.%d' % (

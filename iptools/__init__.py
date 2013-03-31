@@ -30,6 +30,7 @@ __all__ = (
     'IpRangeList',
 )
 
+
 # sniff for python2.x / python3k compatibility "fixes'
 try:
     basestring = basestring
@@ -49,10 +50,22 @@ try:
 except ImportError:
     # python <2.6 doesn't have abc classes to extend
     Sequence = object
-
 # end compatibility "fixes'
 
+
 from . import ipv4
+from . import ipv6
+
+
+def _address2long(address):
+    """
+    Convert an address string to a long.
+    """
+    parsed = ipv4.ip2long(address)
+    if parsed is None:
+        parsed = ipv6.ip2long(address)
+    return parsed
+#end _addess2long
 
 
 class IpRange (Sequence):
@@ -71,6 +84,10 @@ class IpRange (Sequence):
     False
     >>> 2130706433 in r
     True
+    >>> '::ffff:192.0.2.128' in r
+    False
+    >>> '::ffff:c000:0280' in r
+    False
     >>> r = IpRange('127/24')
     >>> print(r)
     ('127.0.0.0', '127.0.0.255')
@@ -86,6 +103,21 @@ class IpRange (Sequence):
     >>> r = IpRange('127/255.255.255.0')
     >>> print(r)
     ('127.0.0.0', '127.0.0.255')
+    >>> r = IpRange('::ffff:0000:0000', '::ffff:ffff:ffff')
+    >>> '::ffff:192.0.2.128' in r
+    True
+    >>> '::ffff:c000:0280' in r
+    True
+    >>> 281473902969472 in r
+    True
+    >>> '192.168.2.128' in r
+    False
+    >>> 2130706433 in r
+    False
+    >>> r = IpRange('::ffff:ffff:0000/120')
+    >>> for ip in r: 
+    ...     print(ip) # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
+    ::ffff:ffff:0 ... ::ffff:ffff:6d ... ::ffff:ffff:ff
 
 
     :param start: Ip address in dotted quad format, CIDR notation, subnet
@@ -108,6 +140,10 @@ class IpRange (Sequence):
                 # CIDR notation range
                 start, end = ipv4.cidr2block(start)
 
+            elif ipv6.validate_cidr(start):
+                # CIDR notation range
+                start, end = ipv6.cidr2block(start)
+
             elif ipv4.validate_subnet(start):
                 # Netmask notation range
                 start, end = ipv4.subnet2block(start)
@@ -116,11 +152,15 @@ class IpRange (Sequence):
                 # degenerate range
                 end = start
 
-        start = ipv4.ip2long(start)
-        end = ipv4.ip2long(end)
+        start = _address2long(start)
+        end = _address2long(end)
         self.startIp = min(start, end)
         self.endIp = max(start, end)
         self._len = self.endIp - self.startIp + 1
+
+        self._ipver = ipv4
+        if self.endIp > ipv4.MAX_IP:
+            self._ipver = ipv6
     #end __init__
 
     def __repr__(self):
@@ -133,7 +173,8 @@ class IpRange (Sequence):
         "IpRange('127.0.0.0', '127.0.0.255')"
         """
         return "IpRange(%r, %r)" % (
-            ipv4.long2ip(self.startIp), ipv4.long2ip(self.endIp))
+            self._ipver.long2ip(self.startIp),
+            self._ipver.long2ip(self.endIp))
     #end __repr__
 
     def __str__(self):
@@ -146,7 +187,8 @@ class IpRange (Sequence):
         "('127.0.0.0', '127.0.0.255')"
         """
         return (
-            ipv4.long2ip(self.startIp), ipv4.long2ip(self.endIp)).__repr__()
+            self._ipver.long2ip(self.startIp),
+            self._ipver.long2ip(self.endIp)).__repr__()
     #end __str__
 
     def __eq__(self, other):
@@ -195,10 +237,10 @@ class IpRange (Sequence):
 
     def _cast(self, item):
         if isinstance(item, basestring):
-            item = ipv4.ip2long(item)
-        if type(item) not in [type(1), type(ipv4.MAX_IP)]:
+            item = _address2long(item)
+        if type(item) not in [type(1), type(ipv4.MAX_IP), type(ipv6.MAX_IP)]:
             raise TypeError(
-                "expected dotted-quad ip address or 32-bit integer")
+                "expected ip address, 32-bit integer or 128-bit integer")
         return item
     #end _cast
 
@@ -226,7 +268,7 @@ class IpRange (Sequence):
         offset = item - self.startIp
         if offset >= 0 and offset < self._len:
             return offset
-        raise ValueError('%s is not in range' % ipv4.long2ip(item))
+        raise ValueError('%s is not in range' % self._ipver.long2ip(item))
     #end index
 
     def count(self, item):
@@ -249,7 +291,7 @@ class IpRange (Sequence):
         >>> 'invalid' in r
         Traceback (most recent call last):
             ...
-        TypeError: expected dotted-quad ip address or 32-bit integer
+        TypeError: expected ip address, 32-bit integer or 128-bit integer
 
 
         :param item: Dotted-quad ip address.
@@ -307,15 +349,15 @@ class IpRange (Sequence):
             if stop > self._len:
                 raise IndexError('stop index out of range')
             return IpRange(
-                ipv4.long2ip(self.startIp + start),
-                ipv4.long2ip(self.startIp + stop - 1))
+                self._ipver.long2ip(self.startIp + start),
+                self._ipver.long2ip(self.startIp + stop - 1))
 
         else:
             if index < 0:
                 index = self._len + index
             if index < 0 or index >= self._len:
                 raise IndexError('index out of range')
-            return ipv4.long2ip(self.startIp + index)
+            return self._ipver.long2ip(self.startIp + index)
     #end __getitem__
 
     def __iter__(self):
@@ -335,7 +377,7 @@ class IpRange (Sequence):
         """
         i = self.startIp
         while i <= self.endIp:
-            yield ipv4.long2ip(i)
+            yield self._ipver.long2ip(i)
             i += 1
     #end __iter__
 #end class IpRange
@@ -345,29 +387,12 @@ class IpRangeList (object):
     """
     List of IpRange objects.
 
-    Converts a list of dotted quad ip address and/or CIDR addresses into a
-    list of IpRange objects. This list can perform ``in`` and ``not in`` tests
-    and iterate all of the addresses in the range.
+    Converts a list of ip address and/or CIDR addresses into a list of IpRange
+    objects. This list can perform ``in`` and ``not in`` tests and iterate all
+    of the addresses in the range.
 
-    This can be used to convert django's conf.settings.INTERNAL_IPS list into
-    a smart object which allows CIDR notation.
-
-
-    >>> INTERNAL_IPS = IpRangeList(
-    ...     '127.0.0.1','10/8',('192.168.0.1','192.168.255.255'))
-    >>> '127.0.0.1' in INTERNAL_IPS
-    True
-    >>> '10.10.10.10' in INTERNAL_IPS
-    True
-    >>> '192.168.192.168' in INTERNAL_IPS
-    True
-    >>> '172.16.0.1' in INTERNAL_IPS
-    False
-
-
-    :param \*args: List of ip addresses in dotted quad format or CIDR
-        notation and/or ``(start, end)`` tuples of ip addresses in dotted quad
-        format.
+    :param \*args: List of ip addresses or CIDR notation and/or
+            ``(start, end)`` tuples of ip addresses.
     :type \*args: list of str and/or tuple
     """
     def __init__(self, *args):
@@ -420,7 +445,7 @@ class IpRangeList (object):
         >>> 'invalid' in r
         Traceback (most recent call last):
             ...
-        TypeError: expected dotted-quad ip address or 32-bit integer
+        TypeError: expected ip address, 32-bit integer or 128-bit integer
 
 
         :param item: Dotted-quad ip address.

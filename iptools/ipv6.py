@@ -24,10 +24,34 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+__all__ = (
+    'cidr2block',
+    'ip2long',
+    'long2ip',
+    'validate_cidr',
+    'validate_ip',
+    'MAX_IP',
+    'MIN_IP',
+)
+
+
 import re
+from . import ipv4
+
 
 #: Regex for validating an IPv6 in hex notation
 _HEX_RE = re.compile(r'^([0-9a-f]{0,4}:){2,7}[0-9a-f]{0,4}$')
+
+#: Regex for validating an IPv6 in dotted-quad notation
+_DOTTED_QUAD_RE = re.compile(r'^([0-9a-f]{0,4}:){2,6}(\d{1,3}\.){0,3}\d{1,3}$')
+
+#: Regex for validating a CIDR network
+_CIDR_RE = re.compile(r'^([0-9a-f]{0,4}:){2,7}[0-9a-f]{0,4}/\d{1,3}$')
+
+#: Mamimum IPv6 integer
+MAX_IP = 0xffffffffffffffffffffffffffffffff
+#: Minimum IPv6 integer
+MIN_IP = 0x0
 
 
 def validate_ip(s):
@@ -48,9 +72,13 @@ def validate_ip(s):
     True
     >>> validate_ip('ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff')
     True
+    >>> validate_ip('::ffff:192.0.2.128')
+    True
     >>> validate_ip('::ff::ff')
     False
     >>> validate_ip('::fffff')
+    False
+    >>> validate_ip('::ffff:192.0.2.300')
     False
     >>> validate_ip(None) #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
@@ -66,6 +94,16 @@ def validate_ip(s):
     """
     if _HEX_RE.match(s):
         return len(s.split('::')) <= 2
+    if _DOTTED_QUAD_RE.match(s):
+        halves = s.split('::')
+        if len(halves) > 2:
+            return False
+        hextets = s.split(':')
+        quads = hextets[-1].split('.')
+        for q in quads:
+            if int(q) > 255:
+                return False
+        return True
     return False
 #end validate_ip
 
@@ -89,6 +127,9 @@ def ip2long(ip):
     >>> expect = 0x20010db8000000000001000000000001
     >>> ip2long('2001:db8::1:0:0:1') == expect
     True
+    >>> expect = 281473902969472
+    >>> ip2long('::ffff:192.0.2.128') == expect
+    True
     >>> expect = 0xffffffffffffffffffffffffffffffff
     >>> ip2long('ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff') == expect
     True
@@ -102,6 +143,16 @@ def ip2long(ip):
     """
     if not validate_ip(ip):
         return None
+
+    if '.' in ip:
+        # convert IPv4 suffix to hex
+        chunks = ip.split(':')
+        v4_int = ipv4.ip2long(chunks.pop())
+        if v4_int is None:
+            return None
+        chunks.append('%x' % ((v4_int >> 16) & 0xffff))
+        chunks.append('%x' % (v4_int & 0xffff))
+        ip = ':'.join(chunks)
 
     halves = ip.split('::')
     hextets = halves[0].split(':')
@@ -120,5 +171,149 @@ def ip2long(ip):
         lngip = (lngip << 16) | int(h, 16)
     return lngip
 #end ip2long
+
+
+def long2ip(l):
+    """Convert a network byte order 128-bit integer to a canonical IPv6
+    address.
+
+
+    >>> long2ip(2130706433)
+    '::7f00:1'
+    >>> long2ip(42540766411282592856904266426630537217)
+    '2001:db8::1:0:0:1'
+    >>> long2ip(MIN_IP)
+    '::'
+    >>> long2ip(MAX_IP)
+    'ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff'
+    >>> long2ip(None) #doctest: +IGNORE_EXCEPTION_DETAIL
+    Traceback (most recent call last):
+        ...
+    TypeError: unsupported operand type(s) for >>: 'NoneType' and 'int'
+    >>> long2ip(-1) #doctest: +IGNORE_EXCEPTION_DETAIL
+    Traceback (most recent call last):
+        ...
+    TypeError: expected int between 0 and <really big int> inclusive
+    >>> long2ip(MAX_IP + 1) #doctest: +IGNORE_EXCEPTION_DETAIL
+    Traceback (most recent call last):
+        ...
+    TypeError: expected int between 0 and <really big int> inclusive
+
+
+    :param l: Network byte order 128-bit integer.
+    :type l: int
+    :returns: Canonical IPv6 address (eg. '::1').
+    :raises: TypeError
+    """
+    if MAX_IP < l or l < MIN_IP:
+        raise TypeError(
+            "expected int between %d and %d inclusive" % (MIN_IP, MAX_IP))
+
+    # format as one big hex value
+    hex_str = '%032x' % l
+    # split into double octet chunks without padding zeros
+    hextets = ['%x' % int(hex_str[x:x+4], 16) for x in range(0, 32, 4)]
+
+    # find and remove left most longest run of zeros
+    dc_start, dc_len = (-1, 0)
+    run_start, run_len = (-1, 0)
+    for idx, hextet in enumerate(hextets):
+        if '0' == hextet:
+            run_len += 1
+            if -1 == run_start:
+                run_start = idx
+            if run_len > dc_len:
+                dc_len, dc_start = (run_len, run_start)
+        else:
+            run_len, run_start = (0, -1)
+    #end for
+    if dc_len > 1:
+        dc_end = dc_start + dc_len
+        if dc_end == len(hextets):
+            hextets += ['']
+        hextets[dc_start:dc_end] = ['']
+        if dc_start == 0:
+            hextets = [''] + hextets
+    #end if
+
+    return ':'.join(hextets)
+#end long2ip
+
+
+def validate_cidr(s):
+    """Validate a CIDR notation ip address.
+
+    The string is considered a valid CIDR address if it consists of a valid
+    IPv6 address in hextet format followed by a forward slash (/) and a bit
+    mask length (0-128).
+
+
+    >>> validate_cidr('::/128')
+    True
+    >>> validate_cidr('::/0')
+    True
+    >>> validate_cidr('fc00::/7')
+    True
+    >>> validate_cidr('::ffff:0:0/96')
+    True
+    >>> validate_cidr('::')
+    False
+    >>> validate_cidr('::/129')
+    False
+    >>> validate_cidr(None) #doctest: +IGNORE_EXCEPTION_DETAIL
+    Traceback (most recent call last):
+        ...
+    TypeError: expected string or buffer
+
+
+    :param s: String to validate as a CIDR notation ip address.
+    :type s: str
+    :returns: ``True`` if a valid CIDR address, ``False`` otherwise.
+    :raises: TypeError
+    """
+    if _CIDR_RE.match(s):
+        ip, mask = s.split('/')
+        if validate_ip(ip):
+            if int(mask) > 128:
+                return False
+        else:
+            return False
+        return True
+    return False
+#end validate_cidr
+
+
+def cidr2block(cidr):
+    """Convert a CIDR notation ip address into a tuple containing the network
+    block start and end addresses.
+
+
+    >>> cidr2block('2001:db8::/48')
+    ('2001:db8::', '2001:db8:0:ffff:ffff:ffff:ffff:ffff')
+    >>> cidr2block('::/0')
+    ('::', 'ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff')
+
+
+    :param cidr: CIDR notation ip address (eg. '127.0.0.1/8').
+    :type cidr: str
+    :returns: Tuple of block (start, end) or ``None`` if invalid.
+    :raises: TypeError
+    """
+    if not validate_cidr(cidr):
+        return None
+
+    ip, prefix = cidr.split('/')
+    prefix = int(prefix)
+    ip = ip2long(ip)
+
+    # keep left most prefix bits of ip
+    shift = 128 - prefix
+    block_start = ip >> shift << shift
+
+    # expand right most 128 - prefix bits to 1
+    mask = (1 << shift) - 1
+    block_end = block_start | mask
+    return (long2ip(block_start), long2ip(block_end))
+#end cidr2block
 
 # vim: set sw=4 ts=4 sts=4 et :
