@@ -45,6 +45,22 @@ class IpRangeTests(unittest.TestCase):
         self.assertTrue('::ffff:172.16.11.12' in fixture)
         self.assertFalse('209.19.170.129' in fixture)
     #end testIPv6Range
+
+    def testV4MappedAddressInIPv6Range(self):
+        """
+        Given that the user has configured an IPv4 range
+        When the server recieves a connection from a host in that range
+         And the network stack presents that address in v4 mapped format
+        Then the address should be recognized as being in the IPv4 range.
+        """
+        fixture = iptools.IpRange('192.168.0.1/24')
+
+        self.assertTrue('192.168.0.12' in fixture)
+        self.assertFalse('192.168.1.12' in fixture)
+
+        self.assertTrue('::ffff:192.168.0.12' in fixture)
+        self.assertFalse('::ffff:192.168.1.12' in fixture)
+    #end test6to4AddressInIPv6Range
 #end class IpRangeTests
 
 # vim:se sw=4 ts=4 sts=4 et:

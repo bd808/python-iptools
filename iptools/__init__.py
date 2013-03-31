@@ -84,6 +84,10 @@ class IpRange (Sequence):
     False
     >>> 2130706433 in r
     True
+    >>> # IPv4 mapped IPv6 addresses are valid in an IPv4 block
+    >>> '::ffff:127.127.127.127' in r
+    True
+    >>> # but only if they are actually in the block :)
     >>> '::ffff:192.0.2.128' in r
     False
     >>> '::ffff:c000:0280' in r
@@ -241,6 +245,14 @@ class IpRange (Sequence):
         if type(item) not in [type(1), type(ipv4.MAX_IP), type(ipv6.MAX_IP)]:
             raise TypeError(
                 "expected ip address, 32-bit integer or 128-bit integer")
+
+        if ipv4 == self._ipver and item > ipv4.MAX_IP:
+            # casting an ipv6 in an ipv4 range
+            # downcast to ipv4 iff address is in the IPv4 mapped block
+            if item in IpRange(ipv6.IPV4_MAPPED):
+                item = item & ipv4.MAX_IP
+        #end if
+
         return item
     #end _cast
 
