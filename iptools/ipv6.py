@@ -30,8 +30,27 @@ __all__ = (
     'long2ip',
     'validate_cidr',
     'validate_ip',
+    'DOCUMENTATION_NETWORK',
+    'IPV4_MAPPED',
+    'IPV6_TO_IPV4_NETWORK',
+    'LINK_LOCAL',
+    'LOCALHOST',
+    'LOOPBACK',
     'MAX_IP',
     'MIN_IP',
+    'MULTICAST',
+    'MULTICAST_GLOBAL',
+    'MULTICAST_LOCAL',
+    'MULTICAST_LOCAL_DHCP',
+    'MULTICAST_LOCAL_NODES',
+    'MULTICAST_LOCAL_ROUTERS',
+    'MULTICAST_LOOPBACK',
+    'MULTICAST_SITE',
+    'MULTICAST_SITE',
+    'MULTICAST_SITE_DHCP',
+    'PRIVATE_NETWORK',
+    'TEREDO_NETWORK',
+    'UNSPECIFIED_ADDRESS',
 )
 
 
@@ -52,6 +71,73 @@ _CIDR_RE = re.compile(r'^([0-9a-f]{0,4}:){2,7}[0-9a-f]{0,4}/\d{1,3}$')
 MAX_IP = 0xffffffffffffffffffffffffffffffff
 #: Minimum IPv6 integer
 MIN_IP = 0x0
+
+#: Absence of an address (only valid as source address)
+#: (`RFC 4291 <https://tools.ietf.org/html/rfc4291>`_)
+UNSPECIFIED_ADDRESS = "::/128"
+
+#: Loopback addresses on the local host
+#: (`RFC 4291 <https://tools.ietf.org/html/rfc4291>`_)
+LOOPBACK = "::1/128"
+
+#: Common `localhost` address
+#: (`RFC 4291 <https://tools.ietf.org/html/rfc4291>`_)
+LOCALHOST = LOOPBACK
+
+#: IPv4 mapped to IPv6 (not globally routable)
+#: (`RFC 4291 <https://tools.ietf.org/html/rfc4291>`_)
+IPV4_MAPPED = "::ffff:0:0/96"
+
+#: Documentation and example network
+#: (`RFC 3849 <https://tools.ietf.org/html/rfc3849>`_)
+DOCUMENTATION_NETWORK = "2001::db8::/32"
+
+#: 6to4 Address block
+#: (`RFC 3056 <https://tools.ietf.org/html/rfc3056>`_)
+IPV6_TO_IPV4_NETWORK = "2002::/16"
+
+#: Teredo addresses
+#: (`RFC 4380 <https://tools.ietf.org/html/rfc4380>`_)
+TEREDO_NETWORK = "2001::/32"
+
+#: Private network
+#: (`RFC 4193 <https://tools.ietf.org/html/rfc4193>`_)
+PRIVATE_NETWORK = "fd00::/8"
+
+#: Link-Local unicast networks (not globally routable)
+#: (`RFC 4291 <https://tools.ietf.org/html/rfc4291>`_)
+LINK_LOCAL = "fe80::/10"
+
+#: Multicast reserved block
+#: (`RFC 5771 <https://tools.ietf.org/html/rfc5771>`_)
+MULTICAST = "ff00::/8"
+
+#: Interface-Local multicast
+MULTICAST_LOOPBACK = "ff01::/16"
+
+#: Link-Local multicast
+MULTICAST_LOCAL = "ff02::/16"
+
+#: Site-Local multicast
+MULTICAST_SITE = "ff05::/16"
+
+#: Organization-Local multicast
+MULTICAST_SITE = "ff08::/16"
+
+#: Organization-Local multicast
+MULTICAST_GLOBAL = "ff0e::/16"
+
+#: All nodes on the local segment
+MULTICAST_LOCAL_NODES = "ff02::1"
+
+#: All routers on the local segment
+MULTICAST_LOCAL_ROUTERS = "ff02::2"
+
+#: All DHCP servers and relay agents on the local segment
+MULTICAST_LOCAL_DHCP = "ff02::1:2"
+
+#: All DHCP servers and relay agents on the local site
+MULTICAST_SITE_DHCP = "ff05::1:3"
 
 
 def validate_ip(s):
