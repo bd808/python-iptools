@@ -1,6 +1,5 @@
 include AUTHORS
 include CHANGES
-include ez_setup.py
 include INSTALL
 include LICENSE
 include MANIFEST.in
