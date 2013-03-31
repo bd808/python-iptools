@@ -158,7 +158,7 @@ def ip2long(ip):
     hextets = halves[0].split(':')
     if len(halves) == 2:
         h2 = halves[1].split(':')
-        for z in xrange(8 - (len(hextets) + len(h2))):
+        for z in range(8 - (len(hextets) + len(h2))):
             hextets.append('0')
         for h in h2:
             hextets.append(h)
