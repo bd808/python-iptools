@@ -1,7 +1,8 @@
-include README.md
 include AUTHORS
+include CHANGES
+include ez_setup.py
 include INSTALL
 include LICENSE
-include CHANGES
 include MANIFEST.in
-include ez_setup.py
+include README.md
+recursive-include docs Makefile *.rst *.py

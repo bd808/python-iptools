@@ -1,5 +1,4 @@
 language: python
-
 python:
   - "2.5"
   - "2.6"
@@ -7,12 +6,13 @@ python:
   - "3.2"
   - "3.3"
   - "pypy"
-
-script: "./runtests"
-
-# nothing to install, but this will squelch a warning
-install: "true"
-
+install:
+  - pip install . --use-mirrors
+  - pip install -r tests/requirements.txt --use-mirrors
+script:
+  - flake8 iptools
+  - flake8 tests
+  - nosetests
 notifications:
   email:
       - travis-ci+python-iptools@bd808.com
