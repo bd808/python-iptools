@@ -69,6 +69,8 @@ implements the magic method ``__contains__`` which python calls when the
         '127.0.0.1',                # single ip
         '192.168/16',               # CIDR network block
         ('10.0.0.1', '10.0.0.19'),  # arbitrary inclusive range
+        '::1',                      # single IPv6 address
+        'fe80::/10',                # IPv6 CIDR block
     )
 
 
@@ -76,8 +78,12 @@ implements the magic method ``__contains__`` which python calls when the
 API
 ***
 
+iptools
+=======
+.. automodule:: iptools
+
 IpRangeList
-===========
+-----------
 .. autoclass:: iptools.IpRangeList
   :members:
   :special-members:
@@ -85,7 +91,7 @@ IpRangeList
 
 
 IpRange
-=======
+-------
 .. autoclass:: iptools.IpRange
   :members:
   :special-members:
