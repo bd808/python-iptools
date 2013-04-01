@@ -11,7 +11,7 @@ if 'nosetests' in sys.argv[1:]:
 setup(
     name='iptools',
     version=__version__,
-    description='Python utilites for manipulating IPv4 addresses',
+    description='Python utilites for manipulating IPv4 and IPv6 addresses',
     author='Bryan Davis',
     author_email='bd808@bd808.com',
     url='https://github.com/bd808/python-iptools',
@@ -37,7 +37,7 @@ setup(
         'Topic :: Utilities',
         'Topic :: Internet',
     ],
-    long_description="""Utilities for manipulating IPv4 addresses
+    long_description="""Utilities for manipulating IPv4 and IPv6 addresses
     including a class that can be used to include CIDR network blocks
     in Django's INTERNAL_IPS setting.""",
     zip_safe=False,

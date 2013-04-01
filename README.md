@@ -1,32 +1,14 @@
 python-iptools
 ==============
 
-The [iptools][] package is a collection of utilities for dealing with IPv4
+The [iptools][] package is a collection of utilities for dealing with IP
 addresses.
 
 [![Build Status][ci-status]][ci-home]
 
-A few useful functions and objects for manipulating IPv4 addresses in python.
-This was all inspired by a desire to be able to use CIDR address notation to
-designate `INTERNAL_IPS` in a [Django][] project's settings file.
-
-Functions
----------
-
-* `validate_ip`: Validate a dotted quad IPv4 address.
-* `ip2long`: Convert a dotted quad IPv4 address to a network byte order 32-bit
-  integer.
-* `long2ip`: Convert a network byte order 32-bit integer to a dotted quad IPv4
-  address.
-* `validate_cidr`: Validate a CIDR notation IPv4 address.
-* `cidr2block`: Convert a CIDR notation IPv4 address into a tuple containing
-  network block start and end addresses.
-
-Objects
--------
-
-* `IpRange`: Range of IPv4 addresses providing `in` and iteration.
-* `IpRangeList`: List of IpRange objects providing `in` and iteration.
+A few useful functions and objects for manipulating IPv4 and IPv6 addresses in
+python. The project was inspired by a desire to be able to use CIDR address
+notation to designate `INTERNAL_IPS` in a [Django][] project's settings file.
 
 Using with Django
 -----------------
@@ -64,12 +46,15 @@ which python calls when the `in` or `not in` operators are used.
         '127.0.0.1',                # single ip
         '192.168/16',               # CIDR network block
         ('10.0.0.1', '10.0.0.19'),  # arbitrary inclusive range
+        '::1',                      # single IPv6 address
+        'fe80::/10',                # IPv6 CIDR block
+        '::ffff:172.16.0.2'         # IPv4-mapped IPv6 address
     )
 
-Additional Documentations
--------------------------
+Documentation
+-------------
 
-Pydoc documantation available at [Read the Docs][].
+Full pydoc documentation is available at [Read the Docs][].
 
 Local documentation can be built using [Sphinx][]:
 
@@ -79,10 +64,10 @@ Local documentation can be built using [Sphinx][]:
 Python Version Compatibility
 ----------------------------
 
-[Travis CI][ci-home] automatically runs tests against python 2.5, 2.6, 2.7, 3.2, 3.3 and pypy on 32-bit Ubuntu Linux 11.10.
+[Travis CI][ci-home] automatically runs tests against python 2.5, 2.6, 2.7, 3.2, 3.3 and pypy.
 
-Installing
-----------
+Installation
+------------
 
 Install the latest stable version using pip:
 
@@ -98,6 +83,13 @@ Install the latest development version:
     cd python-iptools
     python setup.py install
 
+Contributions
+-------------
+Bug reports, feature requests and pull requests are accepted. Preference is
+given to issues with well-defined acceptance criteria and/or unit tests.
+
+This project was originally hosted on [Google Code][].
+
 ---
 [iptools]: http://pypi.python.org/pypi/iptools
 [ci-status]: https://secure.travis-ci.org/bd808/python-iptools.png
@@ -107,3 +99,4 @@ Install the latest development version:
 [INTERNAL_IPS]: http://docs.djangoproject.com/en/dev/ref/settings/#internal-ips
 [Read the Docs]: http://python-iptools.readthedocs.org/
 [Sphinx]: http://sphinx.pocoo.org/
+[Google Code]: https://code.google.com/p/python-iptools/

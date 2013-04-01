@@ -8,30 +8,6 @@ The project was inspired by a desire to be able to use CIDR_ address notation
 to designate ``INTERNAL_IPS`` in a Django_ project's settings file.
 
 
-************
-Installation
-************
-Install the latest stable version from PyPi using pip_:
-
-.. code-block:: bash
-
-    pip install iptools
-
-or setuptools_:
-
-.. code-block:: bash
-
-    easy_install iptools
-
-Install the latest development version:
-
-.. code-block:: bash
-
-    git clone https://github.com/bd808/python-iptools.git
-    cd python-iptools
-    python setup.py install
-
-
 ******************************
 Using with Django INTERNAL_IPS
 ******************************
@@ -71,7 +47,40 @@ implements the magic method ``__contains__`` which python calls when the
         ('10.0.0.1', '10.0.0.19'),  # arbitrary inclusive range
         '::1',                      # single IPv6 address
         'fe80::/10',                # IPv6 CIDR block
+        '::ffff:172.16.0.2'         # IPv4-mapped IPv6 address
     )
+
+
+****************************
+Python Version Compatibility
+****************************
+
+`Travis CI`_ automatically runs tests against python 2.5, 2.6, 2.7, 3.2, 3.3 and pypy.
+
+Current test status: |build status|
+
+************
+Installation
+************
+Install the latest stable version from PyPi using pip_:
+
+.. code-block:: bash
+
+    pip install iptools
+
+or setuptools_:
+
+.. code-block:: bash
+
+    easy_install iptools
+
+Install the latest development version:
+
+.. code-block:: bash
+
+    git clone https://github.com/bd808/python-iptools.git
+    cd python-iptools
+    python setup.py install
 
 
 ***
@@ -82,34 +91,30 @@ iptools
 =======
 .. automodule:: iptools
 
-IpRangeList
------------
+iptools.IpRangeList
+-------------------
 .. autoclass:: iptools.IpRangeList
   :members:
   :special-members:
-  :show-inheritance:
 
 
-IpRange
--------
+iptools.IpRange
+---------------
 .. autoclass:: iptools.IpRange
   :members:
   :special-members:
-  :show-inheritance:
 
 
-IPv4
-====
+iptools.ipv4
+============
 .. automodule:: iptools.ipv4
   :members:
-  :show-inheritance:
 
 
-IPv6
-====
+iptools.ipv6
+============
 .. automodule:: iptools.ipv6
   :members:
-  :show-inheritance:
 
 
 ******************
@@ -120,7 +125,15 @@ Indices and tables
 
 .. _iptools: http://pypi.python.org/pypi/iptools
 .. _Django: http://www.djangoproject.com/
+.. _`Travis CI`: http://travis-ci.org/bd808/python-iptools
 .. _pip: http://www.pip-installer.org/en/latest/
 .. _setuptools: https://pypi.python.org/pypi/setuptools
 .. _CIDR: http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing
 .. _INTERNAL_IPS: http://docs.djangoproject.com/en/dev/ref/settings/#internal-ips
+.. |build status| image:: https://secure.travis-ci.org/bd808/python-iptools.png
+   :width: 77
+   :height: 19
+   :alt: Build Status
+   :align: middle
+   :target: http://travis-ci.org/bd808/python-iptools
+
