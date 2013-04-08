@@ -66,21 +66,21 @@ Install the latest stable version from PyPi using pip_:
 
 .. code-block:: bash
 
-    pip install iptools
+    $ pip install iptools
 
 or setuptools_:
 
 .. code-block:: bash
 
-    easy_install iptools
+    $ easy_install iptools
 
 Install the latest development version:
 
 .. code-block:: bash
 
-    git clone https://github.com/bd808/python-iptools.git
-    cd python-iptools
-    python setup.py install
+    $ git clone https://github.com/bd808/python-iptools.git
+    $ cd python-iptools
+    $ python setup.py install
 
 
 ***
