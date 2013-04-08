@@ -4,4 +4,5 @@ include INSTALL
 include LICENSE
 include MANIFEST.in
 include README.md
-recursive-include docs Makefile *.rst *.py
+recursive-include docs *.rst
+prune docs/_build
