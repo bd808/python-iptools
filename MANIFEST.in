@@ -4,5 +4,5 @@ include INSTALL
 include LICENSE
 include MANIFEST.in
 include README.md
-recursive-include docs *.rst
+recursive-include docs *
 prune docs/_build
