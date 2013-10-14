@@ -5,4 +5,5 @@ include LICENSE
 include MANIFEST.in
 include README.md
 recursive-include docs *
+recursive-exclude docs/_build
 prune docs/_build
