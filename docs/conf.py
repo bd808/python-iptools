@@ -12,7 +12,10 @@ templates_path = ['_templates']
 source_suffix = '.rst'
 master_doc = 'index'
 project = 'iptools'
-copyright = '2008-%s, Bryan Davis and iptools contributors. All Rights Reserved' % date.today().year
+copyright = (
+    '2008-%s, Bryan Davis and iptools contributors. '
+    'All Rights Reserved'
+) % date.today().year
 version = iptools.__version__
 release = version
 exclude_patterns = ['_build']
