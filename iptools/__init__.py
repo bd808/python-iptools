@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2008-2014, Bryan Davis
+# Copyright (c) 2008-2014, Bryan Davis and iptools contributors
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
