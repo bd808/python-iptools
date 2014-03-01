@@ -64,7 +64,7 @@ Local documentation can be built using [Sphinx][]:
 Python Version Compatibility
 ----------------------------
 
-[Travis CI][ci-home] automatically runs tests against python 2.5, 2.6, 2.7, 3.2, 3.3 and pypy.
+[Travis CI][ci-home] automatically runs tests against python 2.6, 2.7, 3.2, 3.3 and pypy.
 
 Installation
 ------------
