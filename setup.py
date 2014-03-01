@@ -8,7 +8,7 @@ setup_requires = []
 if 'nosetests' in sys.argv[1:]:
     setup_requires.append('nose>=1.0')
 
-tests_require=['nose>=1.0']
+tests_require = ['nose>=1.0']
 
 setup(
     name='iptools',
@@ -45,13 +45,13 @@ setup(
     Utilities for manipulating IPv4 and IPv6 addresses including a
     class that can be used to include CIDR network blocks in Django's
     INTERNAL_IPS setting.
-    
+
     Full documentation at http://python-iptools.readthedocs.org/
     """,
     zip_safe=False,
     extras_require={
-        'testing':tests_require,
-        },
+        'testing': tests_require,
+    },
 )
 
 # vim: set sw=4 ts=4 sts=4 et :
