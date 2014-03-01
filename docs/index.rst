@@ -55,7 +55,7 @@ implements the magic method ``__contains__`` which python calls when the
 Python Version Compatibility
 ****************************
 
-`Travis CI`_ automatically runs tests against python 2.5, 2.6, 2.7, 3.2, 3.3 and pypy.
+`Travis CI`_ automatically runs tests against python 2.6, 2.7, 3.2, 3.3 and pypy.
 
 Current test status: |build status|
 
