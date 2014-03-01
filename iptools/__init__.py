@@ -243,7 +243,7 @@ class IpRange (Sequence):
     def _cast(self, item):
         if isinstance(item, basestring):
             item = _address2long(item)
-        if type(item) not in [type(1), type(ipv4.MAX_IP), type(ipv6.MAX_IP)]:
+        if type(item) not in (type(1), type(ipv4.MAX_IP), type(ipv6.MAX_IP)):
             raise TypeError(
                 "expected ip address, 32-bit integer or 128-bit integer")
 
