@@ -219,8 +219,8 @@ class IpRange (Sequence):
         2
         >>> len(IpRange('127/22'))
         1024
-        >>> IpRange('fe80::/10').__len__()
-        332306998946228968225951765070086144L
+        >>> IpRange('fe80::/10').__len__() == 2**118
+        True
         """
         return self._len
     #end __len__
@@ -512,8 +512,8 @@ class IpRangeList (object):
         256
         >>> len(IpRangeList('192.168.0.0/22'))
         1024
-        >>> IpRangeList('fe80::/10').__len__()
-        332306998946228968225951765070086144L
+        >>> IpRangeList('fe80::/10').__len__() == 2**118
+        True
         """
         return sum(r.__len__() for r in self.ips)
     #end __len__
