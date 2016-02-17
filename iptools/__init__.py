@@ -517,6 +517,38 @@ class IpRangeList (object):
         """
         return sum(r.__len__() for r in self.ips)
     # end __len__
+
+    def __hash__(self):
+        """
+        Return correct hash for IpRangeList object
+
+        >>> a = IpRange('127.0.0.0/8')
+        >>> b = IpRange('127.0.0.0', '127.255.255.255')
+        >>> IpRangeList(a, b).__hash__() == IpRangeList(a, b).__hash__()
+        True
+        >>> IpRangeList(a, b).__hash__() == IpRangeList(b, a).__hash__()
+        True
+        >>> c = IpRange('10.0.0.0/8')
+        >>> IpRangeList(a, c).__hash__() == IpRangeList(c, a).__hash__()
+        False
+        """
+        return hash(self.ips)
+    # end __hash__
+
+    def __eq__(self, other):
+        """
+        >>> a = IpRange('127.0.0.0/8')
+        >>> b = IpRange('127.0.0.0', '127.255.255.255')
+        >>> IpRangeList(a, b) == IpRangeList(a, b)
+        True
+        >>> IpRangeList(a, b) == IpRangeList(b, a)
+        True
+        >>> c = IpRange('10.0.0.0/8')
+        >>> IpRangeList(a, c) == IpRangeList(c, a)
+        False
+        """
+        return hash(self) == hash(other)
+    # end __eq__
 # end class IpRangeList
 
 # vim: set sw=4 ts=4 sts=4 et :
