@@ -190,7 +190,7 @@ def validate_ip(s):
                 return False
         return True
     return False
-#end validate_ip
+# end validate_ip
 
 
 def ip2long(ip):
@@ -247,7 +247,7 @@ def ip2long(ip):
             hextets.append('0')
         for h in h2:
             hextets.append(h)
-    #end if
+    # end if
 
     lngip = 0
     for h in hextets:
@@ -255,7 +255,7 @@ def ip2long(ip):
             h = '0'
         lngip = (lngip << 16) | int(h, 16)
     return lngip
-#end ip2long
+# end ip2long
 
 
 def long2ip(l):
@@ -311,7 +311,7 @@ def long2ip(l):
                 dc_len, dc_start = (run_len, run_start)
         else:
             run_len, run_start = (0, -1)
-    #end for
+    # end for
     if dc_len > 1:
         dc_end = dc_start + dc_len
         if dc_end == len(hextets):
@@ -319,10 +319,10 @@ def long2ip(l):
         hextets[dc_start:dc_end] = ['']
         if dc_start == 0:
             hextets = [''] + hextets
-    #end if
+    # end if
 
     return ':'.join(hextets)
-#end long2ip
+# end long2ip
 
 
 def validate_cidr(s):
@@ -365,7 +365,7 @@ def validate_cidr(s):
             return False
         return True
     return False
-#end validate_cidr
+# end validate_cidr
 
 
 def cidr2block(cidr):
@@ -399,6 +399,6 @@ def cidr2block(cidr):
     mask = (1 << shift) - 1
     block_end = block_start | mask
     return (long2ip(block_start), long2ip(block_end))
-#end cidr2block
+# end cidr2block
 
 # vim: set sw=4 ts=4 sts=4 et :

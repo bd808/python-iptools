@@ -64,7 +64,7 @@ def _address2long(address):
     if parsed is None:
         parsed = ipv6.ip2long(address)
     return parsed
-#end _addess2long
+# end _addess2long
 
 
 class IpRange (Sequence):
@@ -164,7 +164,7 @@ class IpRange (Sequence):
         self._ipver = ipv4
         if self.endIp > ipv4.MAX_IP:
             self._ipver = ipv6
-    #end __init__
+    # end __init__
 
     def __repr__(self):
         """
@@ -178,7 +178,7 @@ class IpRange (Sequence):
         return "IpRange(%r, %r)" % (
             self._ipver.long2ip(self.startIp),
             self._ipver.long2ip(self.endIp))
-    #end __repr__
+    # end __repr__
 
     def __str__(self):
         """
@@ -192,7 +192,7 @@ class IpRange (Sequence):
         return (
             self._ipver.long2ip(self.startIp),
             self._ipver.long2ip(self.endIp)).__repr__()
-    #end __str__
+    # end __str__
 
     def __eq__(self, other):
         """
@@ -206,7 +206,7 @@ class IpRange (Sequence):
         return isinstance(other, IpRange) and \
             self.startIp == other.startIp and \
             self.endIp == other.endIp
-    #end __eq__
+    # end __eq__
 
     def __len__(self):
         """
@@ -223,7 +223,7 @@ class IpRange (Sequence):
         True
         """
         return self._len
-    #end __len__
+    # end __len__
 
     def __hash__(self):
         """
@@ -238,7 +238,7 @@ class IpRange (Sequence):
         False
         """
         return hash((self.startIp, self.endIp))
-    #end __hash__
+    # end __hash__
 
     def _cast(self, item):
         if isinstance(item, basestring):
@@ -252,10 +252,10 @@ class IpRange (Sequence):
             # downcast to ipv4 iff address is in the IPv4 mapped block
             if item in IpRange(ipv6.IPV4_MAPPED):
                 item = item & ipv4.MAX_IP
-        #end if
+        # end if
 
         return item
-    #end _cast
+    # end _cast
 
     def index(self, item):
         """
@@ -282,11 +282,11 @@ class IpRange (Sequence):
         if offset >= 0 and offset < self._len:
             return offset
         raise ValueError('%s is not in range' % self._ipver.long2ip(item))
-    #end index
+    # end index
 
     def count(self, item):
         return int(item in self)
-    #end count
+    # end count
 
     def __contains__(self, item):
         """
@@ -313,7 +313,7 @@ class IpRange (Sequence):
         """
         item = self._cast(item)
         return self.startIp <= item <= self.endIp
-    #end __contains__
+    # end __contains__
 
     def __getitem__(self, index):
         """
@@ -348,7 +348,7 @@ class IpRange (Sequence):
         """
         if isinstance(index, slice):
             if index.step not in (None, 1):
-                #TODO: return an IpRangeList
+                # TODO: return an IpRangeList
                 raise ValueError('slice step not supported')
             start = index.start or 0
             if start < 0:
@@ -371,7 +371,7 @@ class IpRange (Sequence):
             if index < 0 or index >= self._len:
                 raise IndexError('index out of range')
             return self._ipver.long2ip(self.startIp + index)
-    #end __getitem__
+    # end __getitem__
 
     def __iter__(self):
         """
@@ -392,8 +392,8 @@ class IpRange (Sequence):
         while i <= self.endIp:
             yield self._ipver.long2ip(i)
             i += 1
-    #end __iter__
-#end class IpRange
+    # end __iter__
+# end class IpRange
 
 
 class IpRangeList (object):
@@ -410,7 +410,7 @@ class IpRangeList (object):
     """
     def __init__(self, *args):
         self.ips = tuple(map(IpRange, args))
-    #end __init__
+    # end __init__
 
     def __repr__(self):
         """
@@ -429,7 +429,7 @@ class IpRangeList (object):
         IpRange('192.168.0.0', '192.168.255.255'))"
         """
         return "IpRangeList%r" % (self.ips,)
-    #end __repr__
+    # end __repr__
 
     def __str__(self):
         """
@@ -440,7 +440,7 @@ class IpRangeList (object):
         ('192.168.0.0', '192.168.255.255'))"
         """
         return "(%s)" % ", ".join(str(i) for i in self.ips)
-    #end __str__
+    # end __str__
 
     def __contains__(self, item):
         """
@@ -469,7 +469,7 @@ class IpRangeList (object):
             if item in r:
                 return True
         return False
-    #end __contains__
+    # end __contains__
 
     def __iter__(self):
         """
@@ -497,7 +497,7 @@ class IpRangeList (object):
         for r in self.ips:
             for ip in r:
                 yield ip
-    #end __iter__
+    # end __iter__
 
     def __len__(self):
         """
@@ -516,7 +516,7 @@ class IpRangeList (object):
         True
         """
         return sum(r.__len__() for r in self.ips)
-    #end __len__
-#end class IpRangeList
+    # end __len__
+# end class IpRangeList
 
 # vim: set sw=4 ts=4 sts=4 et :

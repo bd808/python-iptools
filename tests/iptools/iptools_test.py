@@ -35,7 +35,7 @@ class IpRangeListTests(unittest.TestCase):
 
         self.assertFalse('209.19.170.129' in INTERNAL_IPS)
     # end testMixedRange
-#end class IpRangeListTests
+# end class IpRangeListTests
 
 
 class IpRangeTests(unittest.TestCase):
@@ -44,7 +44,7 @@ class IpRangeTests(unittest.TestCase):
         fixture = iptools.IpRange('::ffff:0:0/96')
         self.assertTrue('::ffff:172.16.11.12' in fixture)
         self.assertFalse('209.19.170.129' in fixture)
-    #end testIPv6Range
+    # end testIPv6Range
 
     def testV4MappedAddressInIPv6Range(self):
         """
@@ -60,7 +60,7 @@ class IpRangeTests(unittest.TestCase):
 
         self.assertTrue('::ffff:192.168.0.12' in fixture)
         self.assertFalse('::ffff:192.168.1.12' in fixture)
-    #end test6to4AddressInIPv6Range
-#end class IpRangeTests
+    # end test6to4AddressInIPv6Range
+# end class IpRangeTests
 
 # vim:se sw=4 ts=4 sts=4 et:

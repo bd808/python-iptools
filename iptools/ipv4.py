@@ -93,7 +93,7 @@ except NameError:
         except NameError:
             out.reverse()
             return '0b' + ''.join(out)
-    #end bin
+    # end bin
 # end compatibility "fixes'
 
 
@@ -223,7 +223,7 @@ def validate_ip(s):
                 return False
         return True
     return False
-#end validate_ip
+# end validate_ip
 
 
 def validate_cidr(s):
@@ -266,7 +266,7 @@ def validate_cidr(s):
             return False
         return True
     return False
-#end validate_cidr
+# end validate_cidr
 
 
 def validate_netmask(s):
@@ -305,7 +305,7 @@ def validate_netmask(s):
         return True
     else:
         return False
-#end validate_netmask
+# end validate_netmask
 
 
 def validate_subnet(s):
@@ -348,7 +348,7 @@ def validate_subnet(s):
         else:
             return False
     raise TypeError("expected string or unicode")
-#end validate_subnet
+# end validate_subnet
 
 
 def ip2long(ip):
@@ -385,7 +385,7 @@ def ip2long(ip):
     for q in quads:
         lngip = (lngip << 8) | int(q)
     return lngip
-#end ip2long
+# end ip2long
 
 
 def ip2network(ip):
@@ -406,7 +406,7 @@ def ip2network(ip):
     for i in range(4):
         netw = (netw << 8) | int(len(quads) > i and quads[i] or 0)
     return netw
-#end ip2network
+# end ip2network
 
 
 def long2ip(l):
@@ -448,7 +448,7 @@ def long2ip(l):
             "expected int between %d and %d inclusive" % (MIN_IP, MAX_IP))
     return '%d.%d.%d.%d' % (
         l >> 24 & 255, l >> 16 & 255, l >> 8 & 255, l & 255)
-#end long2ip
+# end long2ip
 
 
 def ip2hex(addr):
@@ -478,7 +478,7 @@ def ip2hex(addr):
     if netip is None:
         return None
     return "%08x" % netip
-#end ip2hex
+# end ip2hex
 
 
 def hex2ip(hex_str):
@@ -506,7 +506,7 @@ def hex2ip(hex_str):
     except ValueError:
         return None
     return long2ip(netip)
-#end hex2ip
+# end hex2ip
 
 
 def cidr2block(cidr):
@@ -543,7 +543,7 @@ def cidr2block(cidr):
     network = ip2network(ip)
 
     return _block_from_ip_and_prefix(network, prefix)
-#end cidr2block
+# end cidr2block
 
 
 def netmask2prefix(mask):
@@ -571,7 +571,7 @@ def netmask2prefix(mask):
     if validate_netmask(mask):
         return bin(ip2network(mask)).count('1')
     return 0
-#end netmask2prefix
+# end netmask2prefix
 
 
 def subnet2block(subnet):
@@ -609,7 +609,7 @@ def subnet2block(subnet):
     network = ip2network(ip)
 
     return _block_from_ip_and_prefix(network, prefix)
-#end subnet2block
+# end subnet2block
 
 
 def _block_from_ip_and_prefix(ip, prefix):
@@ -630,6 +630,6 @@ def _block_from_ip_and_prefix(ip, prefix):
     mask = (1 << shift) - 1
     block_end = block_start | mask
     return (long2ip(block_start), long2ip(block_end))
-#end _block_from_ip_and_prefix
+# end _block_from_ip_and_prefix
 
 # vim: set sw=4 ts=4 sts=4 et :
