@@ -6,8 +6,8 @@ python:
   - "3.3"
   - "pypy"
 install:
-  - pip install . --use-mirrors
-  - pip install -r tests/requirements.txt --use-mirrors
+  - pip install .
+  - pip install -r tests/requirements.txt
 script:
   - flake8
   - nosetests
