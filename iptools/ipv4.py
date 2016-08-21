@@ -285,6 +285,10 @@ def validate_netmask(s):
     True
     >>> validate_netmask('128.0.0.1')
     False
+    >>> validate_netmask('1.255.255.0')
+    False
+    >>> validate_netmask('0.255.255.0')
+    False
 
 
     :param s: String to validate as a dotted-quad notation netmask.
@@ -293,7 +297,8 @@ def validate_netmask(s):
     :raises: TypeError
     """
     if validate_ip(s):
-        mask = bin(ip2network(s))[2:]
+        # Convert to binary string, strip '0b' prefix, 0 pad to 32 bits
+        mask = bin(ip2network(s))[2:].zfill(32)
         # all left most bits must be 1, all right most must be 0
         seen0 = False
         for c in mask:
