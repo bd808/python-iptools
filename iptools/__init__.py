@@ -249,7 +249,7 @@ class IpRange (Sequence):
         if ipv4 == self._ipver and item > ipv4.MAX_IP:
             # casting an ipv6 in an ipv4 range
             # downcast to ipv4 iff address is in the IPv4 mapped block
-            if item in IpRange(ipv6.IPV4_MAPPED):
+            if item in _IPV6_MAPPED_IPV4:
                 item = item & ipv4.MAX_IP
         # end if
 
@@ -395,6 +395,9 @@ class IpRange (Sequence):
 # end class IpRange
 
 
+_IPV6_MAPPED_IPV4 = IpRange(ipv6.IPV4_MAPPED)
+
+
 class IpRangeList (object):
     """
     List of IpRange objects.
@@ -464,6 +467,11 @@ class IpRangeList (object):
         :type item: str
         :returns: ``True`` if address is in list, ``False`` otherwise.
         """
+        if isinstance(item, basestring):
+            item = _address2long(item)
+        if type(item) not in (type(1), type(ipv4.MAX_IP), type(ipv6.MAX_IP)):
+            raise TypeError(
+                "expected ip address, 32-bit integer or 128-bit integer")
         for r in self.ips:
             if item in r:
                 return True
