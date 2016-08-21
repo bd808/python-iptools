@@ -1,8 +1,9 @@
+*.egg-info
 *.pyc
-.coverage
-.venv
-build
-dist
-extras
-iptools.egg-info
+/.coverage
+/.tox/
+/.venv/
+/build/
+/dist/
+/extras/
 setuptools-*.egg
