@@ -1,16 +1,22 @@
 language: python
 python:
-  - "2.6"
   - "2.7"
-  - "3.2"
-  - "3.3"
+  - "3.4"
+  - "3.5"
   - "pypy"
+  - "pypy3"
+sudo: false
+matrix:
+  fast_finish: true
+
 install:
-  - pip install .
-  - pip install -r tests/requirements.txt
+  - pip install wheel tox-travis
+  - python setup.py install bdist_wheel
+  - pip install ./dist/iptools-*.whl
 script:
-  - flake8
-  - nosetests
+  - tox
+  - tox --installpkg ./dist/iptools-*.whl
+
 notifications:
   email:
       - travis-ci+python-iptools@bd808.com
