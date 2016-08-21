@@ -23,6 +23,40 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+import re
+
+# sniff for python2.x / python3k compatibility "fixes'
+try:
+    basestring = basestring
+except NameError:
+    # 'basestring' is undefined, must be python3k
+    basestring = str
+
+try:
+    bin = bin
+except NameError:
+    # builtin bin function doesn't exist
+    def bin(x):
+        """
+        From http://code.activestate.com/recipes/219300/#c7
+        """
+        if x < 0:
+            return '-' + bin(-x)
+        out = []
+        if x == 0:
+            out.append('0')
+        while x > 0:
+            out.append('01'[x & 1])
+            x >>= 1
+            pass
+        try:
+            return '0b' + ''.join(reversed(out))
+        except NameError:
+            out.reverse()
+            return '0b' + ''.join(out)
+    # end bin
+# end compatibility "fixes'
+
 __all__ = (
     'cidr2block',
     'hex2ip',
@@ -59,43 +93,6 @@ __all__ = (
     'TEST_NET_2',
     'TEST_NET_3',
 )
-
-
-import re
-
-
-# sniff for python2.x / python3k compatibility "fixes'
-try:
-    basestring = basestring
-except NameError:
-    # 'basestring' is undefined, must be python3k
-    basestring = str
-
-try:
-    bin = bin
-except NameError:
-    # builtin bin function doesn't exist
-    def bin(x):
-        """
-        From http://code.activestate.com/recipes/219300/#c7
-        """
-        if x < 0:
-            return '-' + bin(-x)
-        out = []
-        if x == 0:
-            out.append('0')
-        while x > 0:
-            out.append('01'[x & 1])
-            x >>= 1
-            pass
-        try:
-            return '0b' + ''.join(reversed(out))
-        except NameError:
-            out.reverse()
-            return '0b' + ''.join(out)
-    # end bin
-# end compatibility "fixes'
-
 
 #: Regex for validating an IPv4 address
 _DOTTED_QUAD_RE = re.compile(r'^(\d{1,3}\.){0,3}\d{1,3}$')

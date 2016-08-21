@@ -23,6 +23,9 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+import re
+from . import ipv4
+
 __all__ = (
     'cidr2block',
     'ip2long',
@@ -51,11 +54,6 @@ __all__ = (
     'TEREDO_NETWORK',
     'UNSPECIFIED_ADDRESS',
 )
-
-
-import re
-from . import ipv4
-
 
 #: Regex for validating an IPv6 in hex notation
 _HEX_RE = re.compile(r'^([0-9a-f]{0,4}:){2,7}[0-9a-f]{0,4}$')

@@ -22,13 +22,6 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-__version__ = '0.7.0-dev'
-
-__all__ = (
-    'IpRange',
-    'IpRangeList',
-)
-
 
 # sniff for python2.x / python3k compatibility "fixes'
 try:
@@ -51,9 +44,15 @@ except ImportError:
     Sequence = object
 # end compatibility "fixes'
 
-
 from . import ipv4
 from . import ipv6
+
+__version__ = '0.7.0-dev'
+
+__all__ = (
+    'IpRange',
+    'IpRangeList',
+)
 
 
 def _address2long(address):
