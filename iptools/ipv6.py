@@ -30,6 +30,8 @@ __all__ = (
     'cidr2block',
     'ip2long',
     'long2ip',
+    'long2rfc1924',
+    'rfc19242long',
     'validate_cidr',
     'validate_ip',
     'DOCUMENTATION_NETWORK',
@@ -56,7 +58,7 @@ __all__ = (
 )
 
 #: Regex for validating an IPv6 in hex notation
-_HEX_RE = re.compile(r'^([0-9a-f]{0,4}:){2,7}[0-9a-f]{0,4}$')
+_HEX_RE = re.compile(r'^([0-9a-fA-F]{0,4}:){2,7}[0-9a-fA-F]{0,4}$')
 
 #: Regex for validating an IPv6 in dotted-quad notation
 _DOTTED_QUAD_RE = re.compile(r'^([0-9a-f]{0,4}:){2,6}(\d{1,3}\.){0,3}\d{1,3}$')
@@ -136,6 +138,21 @@ MULTICAST_LOCAL_DHCP = "ff02::1:2"
 #: All DHCP servers and relay agents on the local site
 MULTICAST_SITE_DHCP = "ff05::1:3"
 
+#: RFC 1924 alphabet
+_RFC1924_ALPHABET = [
+    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
+    'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+    'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
+    'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+    '!', '#', '$', '%', '&', '(', ')', '*', '+', '-', ';', '<', '=',
+    '>', '?', '@', '^', '_', '`', '{', '|', '}', '~',
+]
+#: RFC 1924 reverse lookup
+_RFC1924_REV = None
+#: Regex for validating an IPv6 in hex notation
+_RFC1924_RE = re.compile(r'^[0-9A-Za-z!#$%&()*+-;<=>?@^_`{|}~]{20}$')
+
 
 def validate_ip(s):
     """Validate a hexidecimal IPv6 ip address.
@@ -167,6 +184,8 @@ def validate_ip(s):
     Traceback (most recent call last):
         ...
     TypeError: expected string or buffer
+    >>> validate_ip('1080:0:0:0:8:800:200c:417a')
+    True
 
 
     :param s: String to validate as a hexidecimal IPv6 ip address.
@@ -218,6 +237,9 @@ def ip2long(ip):
     True
     >>> ip2long('ff::ff::ff') == None
     True
+    >>> expect = 21932261930451111902915077091070067066
+    >>> ip2long('1080:0:0:0:8:800:200C:417A') == expect
+    True
 
 
     :param ip: Hexidecimal IPv6 address
@@ -256,7 +278,7 @@ def ip2long(ip):
 # end ip2long
 
 
-def long2ip(l):
+def long2ip(l, rfc1924=False):
     """Convert a network byte order 128-bit integer to a canonical IPv6
     address.
 
@@ -281,16 +303,25 @@ def long2ip(l):
     Traceback (most recent call last):
         ...
     TypeError: expected int between 0 and <really big int> inclusive
+    >>> long2ip(ip2long('1080::8:800:200C:417A'), rfc1924=True)
+    '4)+k&C#VzJ4br>0wv%Yp'
+    >>> long2ip(ip2long('::'), rfc1924=True)
+    '00000000000000000000'
 
 
     :param l: Network byte order 128-bit integer.
     :type l: int
+    :param rfc1924: Encode in RFC 1924 notation (base 85)
+    :type rfc1924: bool
     :returns: Canonical IPv6 address (eg. '::1').
     :raises: TypeError
     """
     if MAX_IP < l or l < MIN_IP:
         raise TypeError(
             "expected int between %d and %d inclusive" % (MIN_IP, MAX_IP))
+
+    if rfc1924:
+        return long2rfc1924(l)
 
     # format as one big hex value
     hex_str = '%032x' % l
@@ -321,6 +352,72 @@ def long2ip(l):
 
     return ':'.join(hextets)
 # end long2ip
+
+
+def long2rfc1924(l):
+    """Convert a network byte order 128-bit integer to an rfc1924 IPv6
+    address.
+
+
+    >>> long2rfc1924(ip2long('1080::8:800:200C:417A'))
+    '4)+k&C#VzJ4br>0wv%Yp'
+    >>> long2rfc1924(ip2long('::'))
+    '00000000000000000000'
+    >>> long2rfc1924(MAX_IP)
+    '=r54lj&NUUO~Hi%c2ym0'
+
+
+    :param l: Network byte order 128-bit integer.
+    :type l: int
+    :returns: RFC 1924 IPv6 address
+    :raises: TypeError
+    """
+    if MAX_IP < l or l < MIN_IP:
+        raise TypeError(
+            "expected int between %d and %d inclusive" % (MIN_IP, MAX_IP))
+    o = []
+    r = l
+    while r > 85:
+        o.append(_RFC1924_ALPHABET[r % 85])
+        r = r // 85
+    o.append(_RFC1924_ALPHABET[r])
+    return ''.join(reversed(o)).zfill(20)
+
+
+def rfc19242long(s):
+    """Convert an RFC 1924 IPv6 address to a network byte order 128-bit
+    integer.
+
+
+    >>> expect = 0
+    >>> rfc19242long('00000000000000000000') == expect
+    True
+    >>> expect = 21932261930451111902915077091070067066
+    >>> rfc19242long('4)+k&C#VzJ4br>0wv%Yp') == expect
+    True
+    >>> rfc19242long('pizza') == None
+    True
+    >>> rfc19242long('~~~~~~~~~~~~~~~~~~~~') == None
+    True
+    >>> rfc19242long('=r54lj&NUUO~Hi%c2ym0') == MAX_IP
+    True
+
+
+    :param ip: RFC 1924  IPv6 address
+    :type ip: str
+    :returns: Network byte order 128-bit integer or ``None`` if ip is invalid.
+    """
+    global _RFC1924_REV
+    if not _RFC1924_RE.match(s):
+        return None
+    if _RFC1924_REV is None:
+        _RFC1924_REV = {v: k for k, v in enumerate(_RFC1924_ALPHABET)}
+    l = 0
+    for c in s:
+        l = l * 85 + _RFC1924_REV[c]
+    if l > MAX_IP:
+        return None
+    return l
 
 
 def validate_cidr(s):
