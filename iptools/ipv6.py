@@ -412,12 +412,12 @@ def rfc19242long(s):
         return None
     if _RFC1924_REV is None:
         _RFC1924_REV = {v: k for k, v in enumerate(_RFC1924_ALPHABET)}
-    l = 0
+    x = 0
     for c in s:
-        l = l * 85 + _RFC1924_REV[c]
-    if l > MAX_IP:
+        x = x * 85 + _RFC1924_REV[c]
+    if x > MAX_IP:
         return None
-    return l
+    return x
 
 
 def validate_cidr(s):

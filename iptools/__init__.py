@@ -399,7 +399,7 @@ _IPV6_MAPPED_IPV4 = IpRange(ipv6.IPV4_MAPPED)
 
 
 class IpRangeList (object):
-    """
+    r"""
     List of IpRange objects.
 
     Converts a list of ip address and/or CIDR addresses into a list of IpRange
