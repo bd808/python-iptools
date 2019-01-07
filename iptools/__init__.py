@@ -47,7 +47,7 @@ except ImportError:
 from . import ipv4
 from . import ipv6
 
-__version__ = '0.7.0-dev'
+__version__ = '0.7.0'
 
 __all__ = (
     'IpRange',
